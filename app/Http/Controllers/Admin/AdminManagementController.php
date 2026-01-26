@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Models\Village;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
@@ -24,8 +23,7 @@ class AdminManagementController extends Controller
 
     public function index()
     {
-        $admins = User::with('village')
-            ->whereIn('role', ['admin', 'superadmin'])
+        $admins = User::whereIn('role', ['admin', 'superadmin'])
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
@@ -34,11 +32,7 @@ class AdminManagementController extends Controller
 
     public function create()
     {
-        $villages = Village::where('status', 'active')
-            ->orderBy('name')
-            ->get();
-
-        return view('admin.admins.create', compact('villages'));
+        return view('admin.admins.create');
     }
 
     public function store(Request $request)
@@ -48,19 +42,8 @@ class AdminManagementController extends Controller
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:3|confirmed',
             'role' => ['required', Rule::in(['admin', 'superadmin'])],
-            'village_id' => 'nullable|exists:villages,id',
             'phone' => 'nullable|string|max:20',
         ]);
-
-        // Jika role admin, wajib ada village_id
-        if ($validated['role'] === 'admin' && empty($validated['village_id'])) {
-            return back()->withErrors(['village_id' => 'Admin Desa harus dipilih desanya.'])->withInput();
-        }
-
-        // Jika role superadmin, village_id harus null
-        if ($validated['role'] === 'superadmin') {
-            $validated['village_id'] = null;
-        }
 
         $validated['password'] = Hash::make($validated['password']);
 
@@ -77,11 +60,7 @@ class AdminManagementController extends Controller
             abort(403, 'Cannot edit other SuperAdmin.');
         }
 
-        $villages = Village::where('status', 'active')
-            ->orderBy('name')
-            ->get();
-
-        return view('admin.admins.edit', compact('admin', 'villages'));
+        return view('admin.admins.edit', compact('admin'));
     }
 
     public function update(Request $request, User $admin)
@@ -96,19 +75,8 @@ class AdminManagementController extends Controller
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($admin->id)],
             'password' => 'nullable|string|min:3|confirmed',
             'role' => ['required', Rule::in(['admin', 'superadmin'])],
-            'village_id' => 'nullable|exists:villages,id',
             'phone' => 'nullable|string|max:20',
         ]);
-
-        // Jika role admin, wajib ada village_id
-        if ($validated['role'] === 'admin' && empty($validated['village_id'])) {
-            return back()->withErrors(['village_id' => 'Admin Desa harus dipilih desanya.'])->withInput();
-        }
-
-        // Jika role superadmin, village_id harus null
-        if ($validated['role'] === 'superadmin') {
-            $validated['village_id'] = null;
-        }
 
         // Update password hanya jika diisi
         if (!empty($validated['password'])) {

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'BUMDes Marketplace - Produk Lokal Berkualitas dari Desa')
+@section('title', 'Amanah Shop - Produk Lokal Berkualitas UMKM')
 
 @section('content')
     <!-- Hero Section with Newsletter - Nest Style -->
@@ -16,10 +16,10 @@
                     <div class="relative z-10 max-w-lg">
                         <h1 class="text-[48px] font-bold text-[#253D4E] mb-4 leading-tight"
                             style="font-family: 'Quicksand', sans-serif;">
-                            Produk Lokal Desa<br>
+                            Produk Lokal UMKM<br>
                             <span class="text-[#253D4E]">Berkualitas Tinggi</span>
                         </h1>
-                        <p class="text-[18px] text-gray-700 mb-6">Dukung ekonomi desa dengan belanja produk UMKM lokal</p>
+                        <p class="text-[18px] text-gray-700 mb-6">Dukung ekonomi UMKM dengan belanja produk lokal berkualitas</p>
                         <form class="flex gap-0 bg-white rounded-full overflow-hidden shadow-lg max-w-md">
                             <div class="flex items-center pl-6 pr-3">
                                 <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -91,7 +91,7 @@
                     <div class="relative z-10">
                         <h3 class="text-[20px] font-bold text-[#253D4E] mb-1" style="font-family: 'Quicksand', sans-serif;">
                             Kerajinan Tangan</h3>
-                        <p class="text-[14px] text-gray-600 mb-4">Karya asli desa</p>
+                        <p class="text-[14px] text-gray-600 mb-4">Karya asli UMKM</p>
                         <a href="{{ route('products.index') }}"
                             class="inline-block bg-[#3BB77E] text-white px-5 py-2 rounded-md text-sm font-semibold hover:bg-[#2a9d66] transition-colors">
                             Belanja →
@@ -305,14 +305,7 @@
                                 </div>
                             </div>
 
-                            <!-- Vendor -->
-                            @if ($product->village)
-                                <div class="text-[12px] text-gray-500 mb-3">Oleh <span
-                                        class="text-[#3BB77E]">{{ Str::limit($product->village->name, 15) }}</span></div>
-                            @else
-                                <div class="text-[12px] text-gray-500 mb-3">Oleh <span class="text-[#3BB77E]">Desa</span>
-                                </div>
-                            @endif
+                            <!-- Vendor removed - Amanah Shop is single shop -->
 
                             <!-- Progress Bar -->
                             @php
@@ -513,16 +506,7 @@
                                     </div>
                                 </div>
 
-                                <!-- Vendor -->
-                                @if ($product->village)
-                                    <div class="text-[12px] text-gray-500 mb-3">Oleh <span
-                                            class="text-[#3BB77E]">{{ Str::limit($product->village->name, 15) }}</span>
-                                    </div>
-                                @else
-                                    <div class="text-[12px] text-gray-500 mb-3">Oleh <span
-                                            class="text-[#3BB77E]">Desa</span>
-                                    </div>
-                                @endif
+                                <!-- Vendor removed - Amanah Shop is single shop -->
 
                                 <!-- Progress Bar -->
                                 @php
@@ -668,7 +652,7 @@
 
                         <div class="relative z-10">
                             <h3 class="text-[32px] font-bold mb-6 leading-tight text-[#253D4E]"
-                                style="font-family: 'Quicksand', sans-serif;">Bawa produk desa ke rumah </br> anda</h3>
+                                style="font-family: 'Quicksand', sans-serif;">Bawa produk UMKM ke rumah </br> anda</h3>
                             <a href="{{ route('products.index') }}"
                                 class="inline-flex items-center gap-2 bg-[#3BB77E] text-white font-semibold px-3 py-2 rounded-md hover:bg-[#2F9A62] transition-colors text-[12px]">
                                 Belanja Sekarang
@@ -823,11 +807,7 @@
                                 </div>
                             </div>
 
-                            <!-- Vendor -->
-                            @if ($product->village)
-                                <div class="text-[12px] text-gray-500 mb-3">Oleh <span
-                                        class="text-[#3BB77E]">{{ Str::limit($product->village->name, 15) }}</span></div>
-                            @endif
+                            <!-- Vendor removed - Amanah Shop is single shop -->
 
                             <!-- Progress Bar -->
                             @php
@@ -997,11 +977,7 @@
                                     </h3>
                                 </a>
 
-                                @if ($product->village)
-                                    <p class="text-[12px] text-gray-500 mb-3">Oleh <span
-                                            class="text-[#3BB77E] font-medium">{{ Str::limit($product->village->name, 20) }}</span>
-                                    </p>
-                                @endif
+                                {{-- Vendor removed - Amanah Shop is single shop --}}
 
                                 <!-- Rating -->
                                 <div class="flex items-center gap-1 mb-3">

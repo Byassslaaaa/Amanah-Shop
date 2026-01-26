@@ -5,20 +5,12 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
 use App\Models\Product\Category;
 use App\Models\Product\Product;
-use App\Models\Village;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
 {
     public function index()
     {
-        // Featured Villages
-        $featuredVillages = Village::active()
-            ->withCount('products')
-            ->having('products_count', '>', 0)
-            ->take(6)
-            ->get();
-
         $categories = Category::with(['products' => function($query) {
             $query->active()
                 ->inStock()
@@ -29,7 +21,7 @@ class HomeController extends Controller
 
         // Best Seller Products - based on actual sales data
         // Get a mix of barang and jasa products to ensure variety
-        $barangProducts = Product::with(['category', 'village'])
+        $barangProducts = Product::with(['category'])
             ->withCount(['approvedReviews as reviews_count'])
             ->withAvg(['approvedReviews as average_rating'], 'rating')
             ->where('products.status', 'active')
@@ -41,14 +33,14 @@ class HomeController extends Controller
                      ->whereIn('orders.status', ['completed', 'processing', 'shipped'])
                      ->where('orders.payment_status', 'paid');
             })
-            ->selectRaw('products.id, products.name, products.slug, products.description, products.price, products.stock, products.images, products.category_id, products.type, products.whatsapp_number, products.status, products.created_at, products.updated_at, products.village_id, COALESCE(SUM(order_items.quantity), 0) as total_sold')
-            ->groupBy('products.id', 'products.name', 'products.slug', 'products.description', 'products.price', 'products.stock', 'products.images', 'products.category_id', 'products.type', 'products.whatsapp_number', 'products.status', 'products.created_at', 'products.updated_at', 'products.village_id')
+            ->selectRaw('products.id, products.name, products.slug, products.description, products.price, products.stock, products.images, products.category_id, products.type, products.whatsapp_number, products.status, products.sku, products.created_at, products.updated_at, COALESCE(SUM(order_items.quantity), 0) as total_sold')
+            ->groupBy('products.id', 'products.name', 'products.slug', 'products.description', 'products.price', 'products.stock', 'products.images', 'products.category_id', 'products.type', 'products.whatsapp_number', 'products.status', 'products.sku', 'products.created_at', 'products.updated_at')
             ->orderByDesc('total_sold')
             ->orderBy('products.id', 'asc')
             ->take(6)
             ->get();
 
-        $jasaProducts = Product::with(['category', 'village'])
+        $jasaProducts = Product::with(['category'])
             ->withCount(['approvedReviews as reviews_count'])
             ->withAvg(['approvedReviews as average_rating'], 'rating')
             ->where('products.status', 'active')
@@ -60,8 +52,8 @@ class HomeController extends Controller
                      ->whereIn('orders.status', ['completed', 'processing', 'shipped'])
                      ->where('orders.payment_status', 'paid');
             })
-            ->selectRaw('products.id, products.name, products.slug, products.description, products.price, products.stock, products.images, products.category_id, products.type, products.whatsapp_number, products.status, products.created_at, products.updated_at, products.village_id, COALESCE(SUM(order_items.quantity), 0) as total_sold')
-            ->groupBy('products.id', 'products.name', 'products.slug', 'products.description', 'products.price', 'products.stock', 'products.images', 'products.category_id', 'products.type', 'products.whatsapp_number', 'products.status', 'products.created_at', 'products.updated_at', 'products.village_id')
+            ->selectRaw('products.id, products.name, products.slug, products.description, products.price, products.stock, products.images, products.category_id, products.type, products.whatsapp_number, products.status, products.sku, products.created_at, products.updated_at, COALESCE(SUM(order_items.quantity), 0) as total_sold')
+            ->groupBy('products.id', 'products.name', 'products.slug', 'products.description', 'products.price', 'products.stock', 'products.images', 'products.category_id', 'products.type', 'products.whatsapp_number', 'products.status', 'products.sku', 'products.created_at', 'products.updated_at')
             ->orderByDesc('total_sold')
             ->orderBy('products.id', 'asc')
             ->take(2)
@@ -70,7 +62,7 @@ class HomeController extends Controller
         // Merge barang and jasa products
         $featuredProducts = $barangProducts->merge($jasaProducts);
 
-        return view('user.home', compact('featuredVillages', 'categories', 'featuredProducts'));
+        return view('user.home', compact('categories', 'featuredProducts'));
     }
 
     public function about()

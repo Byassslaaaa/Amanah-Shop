@@ -11,9 +11,6 @@ use App\Http\Controllers\Admin\Product\ProductController as AdminProductControll
 use App\Http\Controllers\Admin\Product\CategoryController as AdminCategoryController;
 use App\Http\Controllers\Admin\AdminManagementController;
 use App\Http\Controllers\SuperAdmin\User\UserController as AdminUserController;
-use App\Http\Controllers\Admin\Village\VillageController;
-use App\Http\Controllers\Admin\Village\ShippingSettingsController;
-use App\Http\Controllers\User\Village\VillageController as UserVillageController;
 use App\Http\Controllers\User\Contact\ContactController;
 use App\Http\Controllers\User\Order\OrderController as UserOrderController;
 use App\Http\Controllers\User\PaymentController;
@@ -66,10 +63,7 @@ Route::prefix('api')->name('api.')->group(function () {
 
 // Public Routes
 Route::get('/', [HomeController::class, 'index'])->name('home');
-
-// Villages Routes
-Route::get('/villages', [UserVillageController::class, 'index'])->name('villages.index');
-Route::get('/villages/{slug}', [UserVillageController::class, 'show'])->name('villages.show');
+Route::get('/about', [HomeController::class, 'about'])->name('about');
 
 // Products Routes
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
@@ -185,13 +179,4 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     // User Management (Super Admin Only) - Hanya untuk user biasa, bukan admin
     Route::resource('users', AdminUserController::class);
-
-    // Village Management (SuperAdmin Only)
-    Route::resource('villages', VillageController::class);
-    Route::post('villages/{village}/toggle-status', [VillageController::class, 'toggleStatus'])->name('villages.toggle-status');
-
-    // Shipping Settings (Village Admin Only)
-    Route::get('shipping-settings', [ShippingSettingsController::class, 'index'])->name('shipping-settings.index');
-    Route::put('shipping-settings', [ShippingSettingsController::class, 'update'])->name('shipping-settings.update');
-    Route::post('shipping-settings/clear-cache', [ShippingSettingsController::class, 'clearCache'])->name('shipping-settings.clear-cache');
 });

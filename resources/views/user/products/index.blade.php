@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Semua Produk - BUMDes Marketplace')
+@section('title', 'Semua Produk - Amanah Shop')
 
 @section('content')
 <div class="bg-gray-50 min-h-screen" x-data="{ view: 'grid', showFilters: false }">
@@ -156,29 +156,6 @@
                                     <span class="ml-auto text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">
                                         {{ $category->products()->where('status', 'active')->count() }}
                                     </span>
-                                </label>
-                                @endforeach
-                            </div>
-                        </div>
-
-                        <div class="border-t border-gray-200 pt-6"></div>
-
-                        <!-- Village Filter -->
-                        <div class="mb-6">
-                            <label class="block text-sm font-semibold text-gray-700 mb-3">Desa</label>
-                            <div class="space-y-2 max-h-48 overflow-y-auto pr-2">
-                                <label class="flex items-center gap-3 p-2.5 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
-                                    <input type="radio" name="village_id" value=""
-                                           {{ !request('village_id') ? 'checked' : '' }}
-                                           class="w-4 h-4 text-[#3BB77E] focus:ring-[#3BB77E] border-gray-300">
-                                    <span class="text-sm text-gray-700 font-medium">Semua Desa</span>
-                                </label>
-                                @foreach($villages as $village)
-                                <label class="flex items-center gap-3 p-2.5 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
-                                    <input type="radio" name="village_id" value="{{ $village->id }}"
-                                           {{ request('village_id') == $village->id ? 'checked' : '' }}
-                                           class="w-4 h-4 text-[#3BB77E] focus:ring-[#3BB77E] border-gray-300">
-                                    <span class="text-sm text-gray-700">{{ $village->name }}</span>
                                 </label>
                                 @endforeach
                             </div>

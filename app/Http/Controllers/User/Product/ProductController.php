@@ -5,7 +5,6 @@ namespace App\Http\Controllers\User\Product;
 use App\Http\Controllers\Controller;
 use App\Models\Product\Product;
 use App\Models\Product\Category;
-use App\Models\Village;
 use App\Helpers\WhatsappHelper;
 use Illuminate\Http\Request;
 
@@ -13,8 +12,8 @@ class ProductController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Product::with(['category', 'village'])->active();
-        
+        $query = Product::with(['category'])->active();
+
         if ($request->has('search') && $request->search) {
             $search = $request->search;
             $query->where(function($q) use ($search) {
@@ -25,11 +24,6 @@ class ProductController extends Controller
 
         if ($request->has('category_id') && $request->category_id) {
             $query->where('category_id', $request->category_id);
-        }
-
-        // Filter by village
-        if ($request->has('village_id') && $request->village_id) {
-            $query->where('village_id', $request->village_id);
         }
 
         if ($request->has('min_price') && $request->min_price) {
@@ -49,9 +43,8 @@ class ProductController extends Controller
 
         $products = $query->paginate(12);
         $categories = Category::has('products')->get();
-        $villages = Village::active()->has('products')->get();
 
-        return view('user.products.index', compact('products', 'categories', 'villages'));
+        return view('user.products.index', compact('products', 'categories'));
     }
     
     public function show(Product $product)

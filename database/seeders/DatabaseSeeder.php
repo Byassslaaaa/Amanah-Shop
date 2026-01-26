@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
             \Database\Seeders\Product\CategoryTypeSeeder::class,
             \Database\Seeders\Credit\InstallmentPlanSeeder::class,
             \Database\Seeders\Finance\TransactionCategorySeeder::class,
+            // \Database\Seeders\SupplierSeeder::class, // Optional - uncomment jika butuh supplier
         ]);
 
         // Create SuperAdmin (owner of Amanah Shop)
@@ -74,6 +75,13 @@ class DatabaseSeeder extends Seeder
         $this->command->info('   - Users: ' . User::count());
         $this->command->info('   - Installment Plans: ' . \App\Models\Credit\InstallmentPlan::count());
         $this->command->info('   - Transaction Categories: ' . \App\Models\Finance\TransactionCategory::count());
+
+        // Only show supplier count if suppliers exist (seeder is optional)
+        $supplierCount = \App\Models\Supplier::count();
+        if ($supplierCount > 0) {
+            $this->command->info('   - Suppliers: ' . $supplierCount . ' (opsional untuk UMKM desa)');
+        }
+
         $this->command->info('   - Product Categories: ' . Category::count());
         $this->command->info('   - Products: ' . Product::count());
         $this->command->info('');
@@ -82,5 +90,10 @@ class DatabaseSeeder extends Seeder
         $this->command->info('   Admin: admin@amanahshop.com / 123');
         $this->command->info('   User: budi@example.com / 123');
         $this->command->info('   User: siti@example.com / 123');
+        $this->command->info('');
+        $this->command->info('📱 WhatsApp Integration Ready!');
+        $this->command->info('   - Admin phones: 081234567890, 082136547891');
+        $this->command->info('   - Example: MASUK PROD0001 100 50000');
+        $this->command->info('   - Supplier code opsional (untuk UMKM yang kulak sendiri)');
     }
 }

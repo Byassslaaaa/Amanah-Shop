@@ -11,31 +11,6 @@
             <p class="text-gray-600 mt-2 text-sm sm:text-base">Review pesanan Anda dan selesaikan pembayaran</p>
         </div>
 
-        <!-- Warning if any village hasn't set coordinates -->
-        @if(isset($villagesOrigin) && $villagesOrigin->where('has_origin', false)->count() > 0)
-            <div class="mb-6 bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-lg">
-                <div class="flex items-start">
-                    <div class="flex-shrink-0">
-                        <svg class="h-5 w-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                        </svg>
-                    </div>
-                    <div class="ml-3">
-                        <h3 class="text-sm font-medium text-yellow-800">Ongkos Kirim Belum Tersedia</h3>
-                        <div class="mt-2 text-sm text-yellow-700">
-                            <p>Beberapa desa penjual belum mengatur koordinat lokasi pengiriman. Ongkos kirim tidak dapat dihitung untuk produk dari desa:</p>
-                            <ul class="list-disc list-inside mt-1">
-                                @foreach($villagesOrigin->where('has_origin', false) as $village)
-                                    <li>{{ $village['village_name'] }}</li>
-                                @endforeach
-                            </ul>
-                            <p class="mt-2">Silakan hubungi penjual atau pilih produk dari desa lain.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        @endif
-
         <form action="{{ route('user.orders.store') }}" method="POST" id="checkout-form">
             @csrf
 
@@ -474,10 +449,8 @@
 // Data dari backend
 const productTotal = {{ $productTotal }};
 const subtotalProduct = productTotal;
-const villagesOrigin = @json(isset($villagesOrigin) ? $villagesOrigin : []);
 const cartItemsData = {!! json_encode($cartItems->map(function($item) {
     return [
-        'village_id' => $item->product->village_id ?? null,
         'name' => $item->product->name,
         'price' => $item->product->price,
         'weight' => $item->product->weight ?? 1000,
@@ -575,7 +548,7 @@ async function searchLocation(query) {
         // Use Nominatim OpenStreetMap for free geocoding
         const response = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)},Indonesia&format=json&addressdetails=1&limit=10`, {
             headers: {
-                'User-Agent': 'SiDesa-Marketplace'
+                'User-Agent': 'Amanah-Shop'
             }
         });
         const data = await response.json();

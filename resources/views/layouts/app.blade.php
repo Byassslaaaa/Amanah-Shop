@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'BUMDes Marketplace')</title>
+    <title>@yield('title', 'Amanah Shop')</title>
 
     <!-- Google Fonts - Lato & Quicksand -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -26,11 +26,11 @@
                 <!-- Logo -->
                 <div class="flex items-center flex-shrink-0">
                     <a href="{{ route('home') }}" class="flex items-center gap-2 group">
-                        <img src="/images/logo.svg" alt="BUMDes" class="w-12 h-12"
+                        <img src="/images/logo.svg" alt="Amanah Shop" class="w-12 h-12"
                             onerror="this.style.display='none'">
                         <div>
                             <span class="text-[32px] font-bold text-[#253D4E] leading-none"
-                                style="font-family: 'Quicksand', sans-serif;">BUMDes</span>
+                                style="font-family: 'Quicksand', sans-serif;">Amanah Shop</span>
                         </div>
                     </a>
                 </div>
@@ -45,7 +45,7 @@
                                     d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                             </svg>
                         </div>
-                        <input type="text" name="search" placeholder="Cari produk lokal dari desa..."
+                        <input type="text" name="search" placeholder="Cari produk lokal..."
                             class="flex-1 px-2 py-2 text-[14px] border-0 focus:outline-none focus:ring-0">
                         <button type="submit"
                             class="bg-[#3BB77E] hover:bg-[#2a9d66] text-white font-bold px-8 py-3 rounded-full transition-colors text-[14px]">
@@ -236,16 +236,7 @@
                             </svg>
                             <span>Produk Jasa</span>
                         </a>
-                        <div class="border-t border-gray-100 my-2"></div>
-                        <a href="{{ route('villages.index') }}"
-                            class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-primary-50 hover:text-primary-600">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4">
-                                </path>
-                            </svg>
-                            <span>Desa Partner</span>
-                        </a>
+                        {{-- Villages removed - Amanah Shop is single shop --}}
                     </div>
                 </div>
 
@@ -259,13 +250,10 @@
                         class="text-[#253D4E] hover:text-[#3BB77E] font-bold text-[15px] transition-colors relative group">
                         Produk
                     </a>
-                    <a href="{{ route('villages.index') }}"
+                    {{-- Villages removed - Amanah Shop is single shop --}}
+                    <a href="{{ route('about') }}"
                         class="text-[#253D4E] hover:text-[#3BB77E] font-bold text-[15px] transition-colors relative group">
-                        Desa
-                    </a>
-                    <a href="{{ route('contact') }}"
-                        class="text-[#253D4E] hover:text-[#3BB77E] font-bold text-[15px] transition-colors relative group">
-                        Gabung Mitra
+                        Tentang Kami
                     </a>
                 </div>
 
@@ -304,10 +292,9 @@
                     class="block text-lg text-gray-700 hover:text-primary-500 py-2">Beranda</a>
                 <a href="{{ route('products.index') }}"
                     class="block text-lg text-gray-700 hover:text-primary-500 py-2">Produk</a>
-                <a href="{{ route('villages.index') }}"
-                    class="block text-lg text-gray-700 hover:text-primary-500 py-2">Desa</a>
-                <a href="{{ route('contact') }}"
-                    class="block text-lg text-gray-700 hover:text-primary-500 py-2">Kontak</a>
+                {{-- Villages removed - Amanah Shop is single shop --}}
+                <a href="{{ route('about') }}"
+                    class="block text-lg text-gray-700 hover:text-primary-500 py-2">Tentang Kami</a>
 
                 <div class="border-t border-gray-200 pt-4">
                     @auth
@@ -365,7 +352,7 @@
                         Dukung Ekonomi Desa & Dapatkan Produk Lokal Berkualitas
                     </h2>
                     <p class="text-[#7E7E7E] text-[16px] mb-6">Berlangganan newsletter untuk info produk terbaru dari
-                        BUMDes seluruh Indonesia</p>
+                        Amanah Shop - Toko Koperasi UMKM Terpercaya</p>
                     <form class="flex gap-0 bg-white rounded-full overflow-hidden shadow-lg max-w-lg mx-auto lg:mx-0">
                         <div class="flex items-center pl-6 pr-3">
                             <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor"
@@ -474,13 +461,12 @@
                 <!-- Brand Column -->
                 <div class="lg:col-span-2">
                     <div class="flex items-center gap-2 mb-6">
-                        <img src="/images/logo.svg" alt="BUMDes" class="w-10 h-10"
+                        <img src="/images/logo.svg" alt="Amanah Shop" class="w-10 h-10"
                             onerror="this.style.display='none'">
                         <span class="text-[28px] font-bold text-[#253D4E]"
-                            style="font-family: 'Quicksand', sans-serif;">BUMDes</span>
+                            style="font-family: 'Quicksand', sans-serif;">Amanah Shop</span>
                     </div>
-                    <p class="text-[14px] text-gray-600 mb-6 leading-relaxed">Marketplace produk lokal dari desa untuk
-                        mendukung perekonomian desa dan UMKM Indonesia</p>
+                    <p class="text-[14px] text-gray-600 mb-6 leading-relaxed">Toko koperasi simpan pinjam dengan sistem pembayaran tunai dan kredit untuk mendukung UMKM lokal Indonesia</p>
                     <div class="space-y-3 mb-6">
                         <div class="flex items-center gap-3">
                             <svg class="w-5 h-5 text-[#3BB77E]" fill="none" stroke="currentColor"
@@ -516,15 +502,12 @@
                     <h4 class="text-[18px] font-bold text-[#253D4E] mb-6"
                         style="font-family: 'Quicksand', sans-serif;">Informasi</h4>
                     <ul class="space-y-3">
-                        <li><a href="{{ route('home') }}"
-                                class="text-[14px] text-gray-600 hover:text-[#3BB77E] transition">Tentang BUMDes</a>
+                        <li><a href="{{ route('about') }}"
+                                class="text-[14px] text-gray-600 hover:text-[#3BB77E] transition">Tentang Kami</a>
                         </li>
-                        <li><a href="{{ route('villages.index') }}"
-                                class="text-[14px] text-gray-600 hover:text-[#3BB77E] transition">Desa Partner</a></li>
+                        {{-- Villages removed - Amanah Shop is single shop --}}
                         <li><a href="{{ route('products.index') }}"
-                                class="text-[14px] text-gray-600 hover:text-[#3BB77E] transition">Produk Desa</a></li>
-                        <li><a href="{{ route('contact') }}"
-                                class="text-[14px] text-gray-600 hover:text-[#3BB77E] transition">Hubungi Kami</a></li>
+                                class="text-[14px] text-gray-600 hover:text-[#3BB77E] transition">Produk</a></li>
                     </ul>
                 </div>
 
@@ -568,7 +551,7 @@
                 <div>
                     <h4 class="text-[18px] font-bold text-[#253D4E] mb-6"
                         style="font-family: 'Quicksand', sans-serif;">Ikuti Kami</h4>
-                    <p class="text-[14px] text-gray-600 mb-4">Dapatkan info terbaru dari BUMDes</p>
+                    <p class="text-[14px] text-gray-600 mb-4">Dapatkan info terbaru dari Amanah Shop</p>
                     <div class="flex gap-3">
                         <!-- Facebook -->
                         <a href="#"
@@ -615,7 +598,7 @@
         <div class="border-t border-gray-200">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
                 <div class="flex flex-col md:flex-row justify-between items-center gap-3 text-[13px] text-gray-500">
-                    <p>&copy; {{ date('Y') }}, <strong class="text-[#3BB77E]">BUMDes</strong> - Marketplace Produk
+                    <p>&copy; {{ date('Y') }}, <strong class="text-[#3BB77E]">Amanah Shop</strong> - Toko Koperasi
                         Desa</p>
                     <div class="flex items-center gap-2">
                         <span>Hubungi Kami:</span>

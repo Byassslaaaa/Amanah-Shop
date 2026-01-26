@@ -51,7 +51,7 @@
                        name="email"
                        value="{{ old('email', $admin->email) }}"
                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent @error('email') border-red-500 @enderror"
-                       placeholder="admin@bumdes.com"
+                       placeholder="admin@amanahshop.com"
                        required>
                 @error('email')
                     <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
@@ -82,41 +82,21 @@
                 <select id="role"
                         name="role"
                         class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent @error('role') border-red-500 @enderror"
-                        required
-                        onchange="toggleVillageField(this.value)">
+                        required>
                     <option value="">Pilih Role</option>
-                    <option value="admin" {{ old('role', $admin->role) === 'admin' ? 'selected' : '' }}>Admin Desa</option>
+                    <option value="admin" {{ old('role', $admin->role) === 'admin' ? 'selected' : '' }}>Admin</option>
                     <option value="superadmin" {{ old('role', $admin->role) === 'superadmin' ? 'selected' : '' }}>SuperAdmin</option>
                 </select>
                 @error('role')
                     <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                 @enderror
                 <p class="mt-2 text-xs text-gray-500">
-                    <strong>Admin Desa:</strong> Hanya bisa mengelola desa yang dipilih<br>
-                    <strong>SuperAdmin:</strong> Bisa mengelola semua desa
+                    <strong>Admin:</strong> Dapat mengelola produk dan pesanan<br>
+                    <strong>SuperAdmin:</strong> Akses penuh ke semua fitur sistem
                 </p>
             </div>
 
-            <!-- Village (hanya tampil jika role = admin) -->
-            <div id="village-field" class="mb-6" style="display: {{ old('role', $admin->role) === 'admin' ? 'block' : 'none' }};">
-                <label for="village_id" class="block text-sm font-semibold text-gray-700 mb-2">
-                    Desa <span class="text-red-500">*</span>
-                </label>
-                <select id="village_id"
-                        name="village_id"
-                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent @error('village_id') border-red-500 @enderror">
-                    <option value="">Pilih Desa</option>
-                    @foreach($villages as $village)
-                        <option value="{{ $village->id }}" {{ old('village_id', $admin->village_id) == $village->id ? 'selected' : '' }}>
-                            {{ $village->name }} - {{ $village->district }}, {{ $village->city }}
-                        </option>
-                    @endforeach
-                </select>
-                @error('village_id')
-                    <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-                @enderror
-                <p class="mt-2 text-xs text-gray-500">Pilih desa yang akan dikelola oleh admin ini</p>
-            </div>
+            {{-- Village field removed - Amanah Shop is single shop --}}
 
             <hr class="my-8 border-gray-200">
 
@@ -175,27 +155,5 @@
     </div>
 </div>
 
-<script>
-function toggleVillageField(role) {
-    const villageField = document.getElementById('village-field');
-    const villageSelect = document.getElementById('village_id');
-
-    if (role === 'admin') {
-        villageField.style.display = 'block';
-        villageSelect.required = true;
-    } else {
-        villageField.style.display = 'none';
-        villageSelect.required = false;
-        villageSelect.value = '';
-    }
-}
-
-// Trigger on page load
-document.addEventListener('DOMContentLoaded', function() {
-    const roleSelect = document.getElementById('role');
-    if (roleSelect.value) {
-        toggleVillageField(roleSelect.value);
-    }
-});
-</script>
+{{-- Village JavaScript removed - Amanah Shop is single shop --}}
 @endsection

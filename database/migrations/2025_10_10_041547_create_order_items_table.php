@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('order_id')->constrained()->onDelete('cascade');
             $table->foreignId('product_id')->constrained()->onDelete('cascade');
-            $table->foreignId('village_id')->constrained()->onDelete('cascade');
+            // village_id removed - Amanah Shop is single shop
             $table->string('product_name');
             $table->decimal('price', 10, 2);
             $table->integer('quantity');

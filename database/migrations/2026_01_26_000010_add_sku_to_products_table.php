@@ -11,9 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('withdrawal_requests', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+        Schema::table('products', function (Blueprint $table) {
+            $table->string('sku')->unique()->nullable()->after('id');
         });
     }
 
@@ -22,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('withdrawal_requests');
+        Schema::table('products', function (Blueprint $table) {
+            $table->dropColumn('sku');
+        });
     }
 };

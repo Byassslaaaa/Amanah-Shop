@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Admin - BUMDes Marketplace')</title>
+    <title>@yield('title', 'Admin - Amanah Shop')</title>
     
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
@@ -28,7 +28,7 @@
             <div class="flex items-center justify-between p-4 lg:justify-center">
                 <div>
                     <h2 class="text-xl font-semibold">Admin Panel</h2>
-                    <p class="text-gray-400 text-sm">BUMDes Marketplace</p>
+                    <p class="text-gray-400 text-sm">Amanah Shop</p>
                 </div>
                 <button @click="sidebarOpen = false" class="lg:hidden">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -46,13 +46,7 @@
                 </a>
 
                 @if(auth()->user()->isSuperAdmin())
-                    <!-- SuperAdmin: Kelola dari perspektif Desa -->
-                    <a href="{{ route('admin.villages.index') }}" class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white {{ request()->routeIs('admin.villages.*') ? 'bg-gray-700 text-white' : '' }}">
-                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-                        </svg>
-                        Kelola Desa
-                    </a>
+                    {{-- Villages menu removed - Amanah Shop is single shop --}}
 
                     <a href="{{ route('admin.admins.index') }}" class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white {{ request()->routeIs('admin.admins.*') ? 'bg-gray-700 text-white' : '' }}">
                         <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
