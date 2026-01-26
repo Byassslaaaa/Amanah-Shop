@@ -1,0 +1,63 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&family=Quicksand:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply font-sans text-secondary-800;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading;
+  }
+}
+
+@layer components {
+  /* Nest Product Card */
+  .product-card-nest {
+    @apply bg-white rounded-nest border border-gray-100 overflow-hidden transition-all duration-300;
+  }
+  .product-card-nest:hover {
+    @apply border-primary-500 shadow-nest-hover;
+  }
+
+  /* Nest Button Primary */
+  .btn-nest-primary {
+    @apply bg-primary-500 hover:bg-primary-600 text-white font-bold py-3 px-6 rounded-md transition-all duration-300 inline-flex items-center justify-center;
+  }
+
+  /* Nest Button Outline */
+  .btn-nest-outline {
+    @apply border-2 border-primary-500 text-primary-500 hover:bg-primary-500 hover:text-white font-bold py-3 px-6 rounded-md transition-all duration-300 inline-flex items-center justify-center;
+  }
+
+  /* Nest Category Card */
+  .category-card-nest {
+    @apply bg-light rounded-nest p-6 transition-all duration-300 hover:shadow-nest;
+  }
+
+  /* Nest Section Title */
+  .section-title-nest {
+    @apply text-3xl md:text-4xl font-bold text-secondary-800 mb-2;
+  }
+
+  /* Nest Price */
+  .price-nest {
+    @apply text-2xl font-bold text-primary-500;
+  }
+
+  /* Nest Badge */
+  .badge-nest {
+    @apply inline-block px-3 py-1 text-xs font-semibold rounded-full;
+  }
+  .badge-hot {
+    @apply badge-nest bg-nest-red text-white;
+  }
+  .badge-sale {
+    @apply badge-nest bg-nest-yellow text-secondary-800;
+  }
+  .badge-new {
+    @apply badge-nest bg-nest-blue text-white;
+  }
+}
