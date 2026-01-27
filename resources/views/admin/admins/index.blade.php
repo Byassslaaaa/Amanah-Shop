@@ -54,7 +54,7 @@
                             Role
                         </th>
                         <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                            Desa
+                            Toko
                         </th>
                         <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                             Telepon
@@ -92,7 +92,7 @@
                                     </span>
                                 @else
                                     <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                                        Admin Desa
+                                        Admin Toko
                                     </span>
                                 @endif
                             </td>
@@ -184,7 +184,7 @@
         <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg p-6 text-white">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-blue-100 text-sm font-medium">Total Admin Desa</p>
+                    <p class="text-blue-100 text-sm font-medium">Total Admin Toko</p>
                     <p class="text-3xl font-bold mt-2">{{ $admins->where('role', 'admin')->count() }}</p>
                 </div>
                 <div class="bg-white bg-opacity-20 rounded-full p-4">

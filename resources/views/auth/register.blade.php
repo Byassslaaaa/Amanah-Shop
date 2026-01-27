@@ -1,6 +1,6 @@
 @extends('layouts.guest')
 
-@section('title', 'Daftar - BUMDes Marketplace')
+@section('title', 'Daftar - Amanah Shop')
 
 @section('content')
 <div class="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 flex items-center justify-center py-8 px-4 sm:px-6 lg:px-8">
@@ -12,7 +12,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
                 </svg>
             </div>
-            <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">BUMDes Marketplace</h1>
+            <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Amanah Shop</h1>
             <h2 class="text-lg sm:text-xl font-semibold text-gray-800 mb-2">Daftar Akun Baru</h2>
             <p class="text-sm sm:text-base text-gray-600">
                 Sudah punya akun?

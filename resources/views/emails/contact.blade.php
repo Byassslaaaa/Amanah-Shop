@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pesan Kontak Website Desa</title>
+    <title>Pesan Kontak Amanah Shop</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -69,8 +69,8 @@
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <h1>🏛️ Pesan dari Website Desa</h1>
-            <p style="margin: 0; color: #6b7280;">Pesan kontak baru dari warga melalui website BUMDes Marketplace</p>
+            <h1>🏛️ Pesan dari Amanah Shop</h1>
+            <p style="margin: 0; color: #6b7280;">Pesan kontak baru dari pelanggan melalui website Amanah Shop</p>
         </div>
 
         <!-- Sender Information -->
@@ -112,9 +112,9 @@
 
         <!-- Footer -->
         <div class="footer">
-            <p><strong>BUMDes Marketplace - Sistem Kontak Website Desa</strong></p>
+            <p><strong>Amanah Shop - Sistem Kontak Koperasi Simpan Pinjam</strong></p>
             <p style="margin: 10px 0 0 0;">
-                Email ini dikirim otomatis dari sistem kontak website desa. 
+                Email ini dikirim otomatis dari sistem kontak website Amanah Shop. 
                 Jika Anda memiliki pertanyaan teknis, hubungi administrator website.
             </p>
             <hr style="margin: 15px 0; border: none; height: 1px; background-color: #e5e7eb;">

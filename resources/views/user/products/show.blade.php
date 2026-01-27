@@ -306,10 +306,6 @@
                                 <td class="py-3 text-sm font-medium">{{ $product->category->name }}</td>
                             </tr>
                             <tr>
-                                <td class="py-3 text-sm text-gray-600">Jenis</td>
-                                <td class="py-3 text-sm font-medium">{{ $product->type === 'barang' ? 'Product' : 'Service' }}</td>
-                            </tr>
-                            <tr>
                                 <td class="py-3 text-sm text-gray-600">Stok</td>
                                 <td class="py-3 text-sm font-medium">{{ $product->stock }} units</td>
                             </tr>

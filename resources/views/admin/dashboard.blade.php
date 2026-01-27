@@ -156,10 +156,7 @@
                                 <p class="text-sm font-medium text-gray-900 truncate">{{ $product->name }}</p>
                                 <div class="flex items-center gap-2 mt-1">
                                     <span class="text-xs text-gray-500">{{ $product->category->name }}</span>
-                                    @if($product->village)
-                                        <span class="text-xs text-gray-400">•</span>
-                                        <span class="text-xs text-gray-500">{{ $product->village->name }}</span>
-                                    @endif
+                                    {{-- Shop reference removed - Amanah Shop is single shop --}}
                                 </div>
                             </div>
                             <div class="text-right">
@@ -185,39 +182,7 @@
         </div>
     </div>
 
-    <!-- Product Type Distribution -->
-    <div class="bg-white rounded-xl shadow">
-        <div class="p-6 border-b border-gray-200">
-            <h3 class="text-lg font-semibold text-gray-900">Jenis Produk</h3>
-        </div>
-        <div class="p-6">
-            <div class="space-y-4">
-                <!-- Barang -->
-                <div>
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-sm font-medium text-gray-700">Produk Barang</span>
-                        <span class="text-sm font-semibold text-gray-900">{{ number_format($productsByType['barang']) }}</span>
-                    </div>
-                    <div class="w-full bg-gray-200 rounded-full h-3">
-                        <div class="bg-blue-600 h-3 rounded-full" style="width: {{ $totalProducts > 0 ? ($productsByType['barang'] / $totalProducts * 100) : 0 }}%"></div>
-                    </div>
-                    <p class="text-xs text-gray-500 mt-1">{{ $totalProducts > 0 ? number_format(($productsByType['barang'] / $totalProducts * 100), 1) : 0 }}% dari total produk</p>
-                </div>
-
-                <!-- Jasa -->
-                <div>
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-sm font-medium text-gray-700">Produk Jasa</span>
-                        <span class="text-sm font-semibold text-gray-900">{{ number_format($productsByType['jasa']) }}</span>
-                    </div>
-                    <div class="w-full bg-gray-200 rounded-full h-3">
-                        <div class="bg-green-600 h-3 rounded-full" style="width: {{ $totalProducts > 0 ? ($productsByType['jasa'] / $totalProducts * 100) : 0 }}%"></div>
-                    </div>
-                    <p class="text-xs text-gray-500 mt-1">{{ $totalProducts > 0 ? number_format(($productsByType['jasa'] / $totalProducts * 100), 1) : 0 }}% dari total produk</p>
-                </div>
-            </div>
-        </div>
-    </div>
+    {{-- Product Type Distribution removed - No barang/jasa distinction --}}
 </div>
 
 <!-- Bottom Grid -->
@@ -251,41 +216,8 @@
         </div>
     </div>
 
-    <!-- Top Villages (SuperAdmin only) -->
-    @if(auth()->user()->isSuperAdmin() && $topVillages)
-        <div class="bg-white rounded-xl shadow">
-            <div class="p-6 border-b border-gray-200 flex items-center justify-between">
-                <h3 class="text-lg font-semibold text-gray-900">Desa Teratas</h3>
-                <a href="{{ route('admin.villages.index') }}" class="text-sm text-green-600 hover:text-green-700 font-medium">
-                    Kelola Desa →
-                </a>
-            </div>
-            <div class="p-6">
-                @if($topVillages->count() > 0)
-                    <div class="space-y-3">
-                        @foreach($topVillages as $village)
-                            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-10 h-10 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg flex items-center justify-center">
-                                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-                                        </svg>
-                                    </div>
-                                    <div>
-                                        <p class="text-sm font-medium text-gray-900">{{ $village->name }}</p>
-                                        <p class="text-xs text-gray-500">{{ $village->city }}, {{ $village->province }}</p>
-                                    </div>
-                                </div>
-                                <span class="text-sm font-semibold text-gray-900">{{ number_format($village->products_count) }} produk</span>
-                            </div>
-                        @endforeach
-                    </div>
-                @else
-                    <p class="text-center text-gray-500 py-8">Belum ada desa</p>
-                @endif
-            </div>
-        </div>
-    @else
+    {{-- Top Villages section removed - Amanah Shop is single shop --}}
+    @if(true)
         <!-- Quick Actions for Admin -->
         <div class="bg-white rounded-xl shadow">
             <div class="p-6 border-b border-gray-200">

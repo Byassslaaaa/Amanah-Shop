@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', $typeLabel . ' - BUMDes Marketplace')
+@section('title', $typeLabel . ' - Amanah Shop')
 
 @section('content')
 <div class="bg-gray-50 min-h-screen">
@@ -10,9 +10,9 @@
             <h1 class="text-3xl font-bold text-gray-900">{{ $typeLabel }}</h1>
             <p class="text-gray-600 mt-2">
                 @if($type === 'barang')
-                    Temukan berbagai produk barang berkualitas dari desa
+                    Temukan berbagai produk barang berkualitas
                 @else
-                    Temukan layanan jasa terbaik dari masyarakat desa
+                    Temukan layanan jasa terbaik
                 @endif
             </p>
         </div>

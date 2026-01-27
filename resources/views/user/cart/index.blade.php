@@ -234,7 +234,7 @@
                                 <li>• Proses pemesanan mudah & cepat</li>
                                 <li>• Transaksi aman & terpercaya</li>
                                 <li>• Lacak pesanan real-time</li>
-                                <li>• Dukungan produk lokal berkualitas</li>
+                                <li>• Produk berkualitas & terjangkau</li>
                             </ul>
                         </div>
                     </div>

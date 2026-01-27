@@ -1,13 +1,14 @@
-@if ($paginator->hasPages())
+@if ($paginator->total() > 0)
     <div class="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white rounded-xl p-6 border border-gray-100">
         <!-- Results Info -->
         <div class="text-sm text-gray-600">
-            Showing <span class="font-semibold text-[#3BB77E]">{{ $paginator->firstItem() }}</span>
-            to <span class="font-semibold text-[#3BB77E]">{{ $paginator->lastItem() }}</span>
-            of <span class="font-semibold">{{ $paginator->total() }}</span> results
+            Menampilkan <span class="font-semibold text-[#3BB77E]">{{ $paginator->firstItem() }}</span>
+            sampai <span class="font-semibold text-[#3BB77E]">{{ $paginator->lastItem() }}</span>
+            dari <span class="font-semibold">{{ $paginator->total() }}</span> produk
         </div>
 
         <!-- Pagination Links -->
+        @if ($paginator->hasPages())
         <nav role="navigation" aria-label="Pagination Navigation">
             <ul class="flex items-center gap-2">
                 {{-- Previous Page Link --}}
@@ -73,5 +74,6 @@
                 @endif
             </ul>
         </nav>
+        @endif
     </div>
 @endif

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Gabung Mitra - BUMDes Marketplace')
+@section('title', 'Hubungi Kami - Amanah Shop')
 
 @section('content')
 <div class="bg-gray-50 min-h-screen">
@@ -21,7 +21,7 @@
                     </svg>
                     <span class="font-semibold text-sm">Partnership Program</span>
                 </div>
-                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6" style="font-family: 'Quicksand', sans-serif;">
+                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6" >
                     Gabung Mitra BUMDes
                 </h1>
                 <p class="text-lg sm:text-xl text-white/90 max-w-3xl mx-auto leading-relaxed">
@@ -36,7 +36,7 @@
 
         <!-- Benefits Section -->
         <div class="mb-16">
-            <h2 class="text-3xl sm:text-4xl font-bold text-[#253D4E] text-center mb-12" style="font-family: 'Quicksand', sans-serif;">
+            <h2 class="text-3xl sm:text-4xl font-bold text-[#253D4E] text-center mb-12" >
                 Keuntungan Menjadi Mitra
             </h2>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -110,7 +110,7 @@
 
         <!-- How to Join Section -->
         <div class="bg-white rounded-2xl border border-gray-100 p-10 mb-16">
-            <h2 class="text-3xl sm:text-4xl font-bold text-[#253D4E] text-center mb-12" style="font-family: 'Quicksand', sans-serif;">
+            <h2 class="text-3xl sm:text-4xl font-bold text-[#253D4E] text-center mb-12" >
                 Cara Bergabung
             </h2>
             <div class="max-w-3xl mx-auto">
@@ -187,7 +187,7 @@
 
         <!-- FAQ Section -->
         <div>
-            <h2 class="text-3xl sm:text-4xl font-bold text-[#253D4E] text-center mb-12" style="font-family: 'Quicksand', sans-serif;">
+            <h2 class="text-3xl sm:text-4xl font-bold text-[#253D4E] text-center mb-12" >
                 Pertanyaan Umum
             </h2>
             <div class="max-w-3xl mx-auto space-y-5" x-data="{ openFaq: null }">
@@ -213,7 +213,7 @@
                         </svg>
                     </button>
                     <div x-show="openFaq === 2" x-collapse class="px-6 pb-6">
-                        <p class="text-gray-600 leading-relaxed">Berbagai produk dari desa seperti hasil pertanian, kerajinan tangan, produk olahan makanan, dan jasa wisata desa.</p>
+                        <p class="text-gray-600 leading-relaxed">Berbagai produk seperti perabotan rumah tangga (lemari, kasur, karpet), pakaian, sepatu, dan keperluan rumah (bantal, selimut, perlengkapan).</p>
                     </div>
                 </div>
 

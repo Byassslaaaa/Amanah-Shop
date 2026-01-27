@@ -26,7 +26,7 @@
         <div class="ml-3">
             <p class="text-sm text-blue-700">
                 <strong>Info:</strong> Halaman ini hanya untuk mengelola <strong>user biasa (role: user)</strong>.
-                Untuk mengelola <strong>Admin Desa</strong> atau <strong>SuperAdmin</strong>, gunakan menu
+                Untuk mengelola <strong>Admin Toko</strong> atau <strong>SuperAdmin</strong>, gunakan menu
                 <a href="{{ route('admin.admins.index') }}" class="underline hover:text-blue-800 font-semibold">"Kelola Admin"</a>.
             </p>
         </div>

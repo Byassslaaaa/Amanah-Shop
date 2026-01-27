@@ -154,28 +154,7 @@
                 <h2 class="text-xl font-semibold text-gray-900 mb-4">Kategori & Status</h2>
                 
                 <div class="space-y-4">
-                    <!-- Type -->
-                    <div>
-                        <label for="type" class="block text-sm font-medium text-gray-700 mb-2">
-                            Jenis Produk *
-                        </label>
-                        <select id="type" name="type" required onchange="filterCategories()"
-                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500 @error('type') border-red-500 @enderror">
-                            <option value="">Pilih Jenis Produk</option>
-                            <option value="barang" {{ old('type', $product->type) == 'barang' ? 'selected' : '' }}>
-                                Produk Barang
-                            </option>
-                            <option value="jasa" {{ old('type', $product->type) == 'jasa' ? 'selected' : '' }}>
-                                Produk Jasa
-                            </option>
-                        </select>
-                        @error('type')
-                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                        @enderror
-                        <p class="mt-1 text-xs text-gray-500">
-                            Pilih "Barang" untuk produk fisik atau "Jasa" untuk layanan
-                        </p>
-                    </div>
+                    {{-- Type field removed - No barang/jasa distinction --}}
 
                     <!-- Category -->
                     <div>

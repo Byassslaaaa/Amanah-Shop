@@ -7,17 +7,20 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Amanah Shop')</title>
 
-    <!-- Google Fonts - Lato & Quicksand -->
+    <!-- Google Fonts - Poppins -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&family=Quicksand:wght@300;400;500;600;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap"
         rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="bg-white">
+<body class="bg-white" style="font-family: 'Poppins', sans-serif;">
 
     <!-- Main Header - Nest Style -->
     <header class="bg-white border-b border-gray-100">
@@ -29,8 +32,7 @@
                         <img src="/images/logo.svg" alt="Amanah Shop" class="w-12 h-12"
                             onerror="this.style.display='none'">
                         <div>
-                            <span class="text-[32px] font-bold text-[#253D4E] leading-none"
-                                style="font-family: 'Quicksand', sans-serif;">Amanah Shop</span>
+                            <span class="text-[32px] font-bold text-[#253D4E] leading-none">Amanah Shop</span>
                         </div>
                     </a>
                 </div>
@@ -45,7 +47,7 @@
                                     d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                             </svg>
                         </div>
-                        <input type="text" name="search" placeholder="Cari produk lokal..."
+                        <input type="text" name="search" placeholder="Cari produk..."
                             class="flex-1 px-2 py-2 text-[14px] border-0 focus:outline-none focus:ring-0">
                         <button type="submit"
                             class="bg-[#3BB77E] hover:bg-[#2a9d66] text-white font-bold px-8 py-3 rounded-full transition-colors text-[14px]">
@@ -190,53 +192,65 @@
     </header>
 
     <!-- Navigation Bar - Nest Style (Sticky) -->
-    <nav class="border-t border-gray-100 bg-white sticky top-0 z-50 shadow-sm"
-        style="font-family: 'Quicksand', sans-serif;">
+    <nav class="border-t border-gray-100 bg-white sticky top-0 z-50 shadow-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center gap-8 py-3">
                 <!-- Browse All Categories -->
                 <div class="relative hidden lg:block" x-data="{ open: false }">
                     <button @click="open = !open"
                         class="flex items-center gap-3 bg-[#3BB77E] hover:bg-[#2a9d66] text-white font-bold px-6 py-3 rounded-md transition-colors text-[14px]">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M4 6h16M4 12h16M4 18h16"></path>
-                        </svg>
+                        <i class="fas fa-bars"></i>
                         <span>Jelajahi Semua Kategori</span>
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                            :class="{ 'rotate-180': open }">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
-                            </path>
-                        </svg>
+                        <i class="fas fa-chevron-down transition-transform duration-200" :class="{ 'rotate-180': open }"></i>
                     </button>
                     <div x-show="open" @click.away="open = false" x-transition x-cloak
-                        class="absolute left-0 top-full mt-3 w-72 bg-white rounded-2xl shadow-2xl border border-gray-100 py-3 z-50">
+                        class="absolute left-0 top-full mt-3 w-72 bg-white rounded-2xl shadow-2xl border border-gray-100 py-3 z-50 max-h-96 overflow-y-auto">
                         <a href="{{ route('products.index') }}"
-                            class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-primary-50 hover:text-primary-600">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
-                            </svg>
+                            class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-primary-50 hover:text-primary-600 font-semibold">
+                            <i class="fas fa-boxes text-[#3BB77E] w-5"></i>
                             <span>Semua Produk</span>
                         </a>
-                        <a href="{{ route('products.type', 'barang') }}"
+                        <div class="border-t border-gray-200 my-2"></div>
+                        <a href="{{ route('products.index', ['category' => 'Perabotan']) }}"
                             class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-primary-50 hover:text-primary-600">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
-                            </svg>
-                            <span>Produk Barang</span>
+                            <i class="fas fa-couch text-[#3BB77E] w-5"></i>
+                            <span>Perabotan</span>
                         </a>
-                        <a href="{{ route('products.type', 'jasa') }}"
+                        <a href="{{ route('products.index', ['category' => 'Perlengkapan Kamar Tidur']) }}"
                             class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-primary-50 hover:text-primary-600">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
-                                </path>
-                            </svg>
-                            <span>Produk Jasa</span>
+                            <i class="fas fa-bed text-[#3BB77E] w-5"></i>
+                            <span>Perlengkapan Kamar Tidur</span>
                         </a>
-                        {{-- Villages removed - Amanah Shop is single shop --}}
+                        <a href="{{ route('products.index', ['category' => 'Pakaian']) }}"
+                            class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-primary-50 hover:text-primary-600">
+                            <i class="fas fa-tshirt text-[#3BB77E] w-5"></i>
+                            <span>Pakaian</span>
+                        </a>
+                        <a href="{{ route('products.index', ['category' => 'Sepatu & Alas Kaki']) }}"
+                            class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-primary-50 hover:text-primary-600">
+                            <i class="fas fa-shoe-prints text-[#3BB77E] w-5"></i>
+                            <span>Sepatu & Alas Kaki</span>
+                        </a>
+                        <a href="{{ route('products.index', ['category' => 'Keperluan Rumah Tangga']) }}"
+                            class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-primary-50 hover:text-primary-600">
+                            <i class="fas fa-blender text-[#3BB77E] w-5"></i>
+                            <span>Keperluan Rumah Tangga</span>
+                        </a>
+                        <a href="{{ route('products.index', ['category' => 'Tekstil Rumah']) }}"
+                            class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-primary-50 hover:text-primary-600">
+                            <i class="fas fa-rug text-[#3BB77E] w-5"></i>
+                            <span>Tekstil Rumah</span>
+                        </a>
+                        <a href="{{ route('products.index', ['category' => 'Aksesoris Rumah']) }}"
+                            class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-primary-50 hover:text-primary-600">
+                            <i class="fas fa-lightbulb text-[#3BB77E] w-5"></i>
+                            <span>Aksesoris Rumah</span>
+                        </a>
+                        <a href="{{ route('products.index', ['category' => 'Lain-lain']) }}"
+                            class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-primary-50 hover:text-primary-600">
+                            <i class="fas fa-ellipsis-h text-[#3BB77E] w-5"></i>
+                            <span>Lain-lain</span>
+                        </a>
                     </div>
                 </div>
 
@@ -347,12 +361,11 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
             <div class="flex flex-col lg:flex-row items-center justify-between gap-8 relative z-10">
                 <div class="flex-1 text-center lg:text-left">
-                    <h2 class="text-[36px] font-bold text-[#253D4E] mb-4 leading-tight"
-                        style="font-family: 'Quicksand', sans-serif;">
-                        Dukung Ekonomi Desa & Dapatkan Produk Lokal Berkualitas
+                    <h2 class="text-[36px] font-bold text-[#253D4E] mb-4 leading-tight">
+                        Dukung Ekonomi Lokal & Dapatkan Produk Berkualitas
                     </h2>
                     <p class="text-[#7E7E7E] text-[16px] mb-6">Berlangganan newsletter untuk info produk terbaru dari
-                        Amanah Shop - Toko Koperasi UMKM Terpercaya</p>
+                        Amanah Shop - Toko Kebutuhan Rumah Tangga & Lifestyle</p>
                     <form class="flex gap-0 bg-white rounded-full overflow-hidden shadow-lg max-w-lg mx-auto lg:mx-0">
                         <div class="flex items-center pl-6 pr-3">
                             <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor"
@@ -377,7 +390,7 @@
 
         <!-- Newsletter Image - Full Height -->
         <div class="absolute right-0 top-0 bottom-0 w-1/2 hidden lg:flex items-end justify-end pointer-events-none">
-            <img src="{{ asset('images/newsletter-banner.png') }}" alt="Petani"
+            <img src="{{ asset('images/newsletter-banner.png') }}" alt="Amanah Shop"
                 class="h-full w-auto object-contain object-bottom" onerror="this.style.display='none'">
         </div>
     </section>
@@ -396,7 +409,7 @@
                         </svg>
                     </div>
                     <h3 class="font-bold text-[#253D4E] mb-1 text-[14px]">Harga Terjangkau</h3>
-                    <p class="text-[12px] text-gray-500">Langsung dari petani</p>
+                    <p class="text-[12px] text-gray-500">Sistem kredit mudah</p>
                 </div>
 
                 <div class="flex flex-col items-center text-center group">
@@ -433,8 +446,8 @@
                             </path>
                         </svg>
                     </div>
-                    <h3 class="font-bold text-[#253D4E] mb-1 text-[14px]">Dukung UMKM</h3>
-                    <p class="text-[12px] text-gray-500">Produk lokal desa</p>
+                    <h3 class="font-bold text-[#253D4E] mb-1 text-[14px]">Produk Berkualitas</h3>
+                    <p class="text-[12px] text-gray-500">Pilihan terlengkap</p>
                 </div>
 
                 <div class="flex flex-col items-center text-center group">
@@ -463,10 +476,9 @@
                     <div class="flex items-center gap-2 mb-6">
                         <img src="/images/logo.svg" alt="Amanah Shop" class="w-10 h-10"
                             onerror="this.style.display='none'">
-                        <span class="text-[28px] font-bold text-[#253D4E]"
-                            style="font-family: 'Quicksand', sans-serif;">Amanah Shop</span>
+                        <span class="text-[28px] font-bold text-[#253D4E]">Amanah Shop</span>
                     </div>
-                    <p class="text-[14px] text-gray-600 mb-6 leading-relaxed">Toko koperasi simpan pinjam dengan sistem pembayaran tunai dan kredit untuk mendukung UMKM lokal Indonesia</p>
+                    <p class="text-[14px] text-gray-600 mb-6 leading-relaxed">Toko kebutuhan rumah tangga & lifestyle dengan sistem pembayaran tunai dan kredit yang mudah dan terpercaya</p>
                     <div class="space-y-3 mb-6">
                         <div class="flex items-center gap-3">
                             <svg class="w-5 h-5 text-[#3BB77E]" fill="none" stroke="currentColor"
@@ -499,8 +511,7 @@
 
                 <!-- Informasi -->
                 <div>
-                    <h4 class="text-[18px] font-bold text-[#253D4E] mb-6"
-                        style="font-family: 'Quicksand', sans-serif;">Informasi</h4>
+                    <h4 class="text-[18px] font-bold text-[#253D4E] mb-6">Informasi</h4>
                     <ul class="space-y-3">
                         <li><a href="{{ route('about') }}"
                                 class="text-[14px] text-gray-600 hover:text-[#3BB77E] transition">Tentang Kami</a>
@@ -513,8 +524,7 @@
 
                 <!-- Akun -->
                 <div>
-                    <h4 class="text-[18px] font-bold text-[#253D4E] mb-6"
-                        style="font-family: 'Quicksand', sans-serif;">Akun</h4>
+                    <h4 class="text-[18px] font-bold text-[#253D4E] mb-6">Akun</h4>
                     <ul class="space-y-3">
                         @auth
                             <li><a href="{{ route('profile') }}"
@@ -534,23 +544,32 @@
 
                 <!-- Kategori Produk -->
                 <div>
-                    <h4 class="text-[18px] font-bold text-[#253D4E] mb-6"
-                        style="font-family: 'Quicksand', sans-serif;">Kategori</h4>
+                    <h4 class="text-[18px] font-bold text-[#253D4E] mb-6">Kategori</h4>
                     <ul class="space-y-3">
                         <li><a href="{{ route('products.index') }}"
                                 class="text-[14px] text-gray-600 hover:text-[#3BB77E] transition">Semua Produk</a></li>
-                        <li><a href="{{ route('products.type', 'barang') }}"
-                                class="text-[14px] text-gray-600 hover:text-[#3BB77E] transition">Produk Barang</a>
-                        </li>
-                        <li><a href="{{ route('products.type', 'jasa') }}"
-                                class="text-[14px] text-gray-600 hover:text-[#3BB77E] transition">Produk Jasa</a></li>
+                        <li><a href="{{ route('products.index', ['category' => 'Perabotan']) }}"
+                                class="text-[14px] text-gray-600 hover:text-[#3BB77E] transition">Perabotan</a></li>
+                        <li><a href="{{ route('products.index', ['category' => 'Perlengkapan Kamar Tidur']) }}"
+                                class="text-[14px] text-gray-600 hover:text-[#3BB77E] transition">Perlengkapan Kamar Tidur</a></li>
+                        <li><a href="{{ route('products.index', ['category' => 'Pakaian']) }}"
+                                class="text-[14px] text-gray-600 hover:text-[#3BB77E] transition">Pakaian</a></li>
+                        <li><a href="{{ route('products.index', ['category' => 'Sepatu & Alas Kaki']) }}"
+                                class="text-[14px] text-gray-600 hover:text-[#3BB77E] transition">Sepatu & Alas Kaki</a></li>
+                        <li><a href="{{ route('products.index', ['category' => 'Keperluan Rumah Tangga']) }}"
+                                class="text-[14px] text-gray-600 hover:text-[#3BB77E] transition">Keperluan Rumah Tangga</a></li>
+                        <li><a href="{{ route('products.index', ['category' => 'Tekstil Rumah']) }}"
+                                class="text-[14px] text-gray-600 hover:text-[#3BB77E] transition">Tekstil Rumah</a></li>
+                        <li><a href="{{ route('products.index', ['category' => 'Aksesoris Rumah']) }}"
+                                class="text-[14px] text-gray-600 hover:text-[#3BB77E] transition">Aksesoris Rumah</a></li>
+                        <li><a href="{{ route('products.index', ['category' => 'Lain-lain']) }}"
+                                class="text-[14px] text-gray-600 hover:text-[#3BB77E] transition">Lain-lain</a></li>
                     </ul>
                 </div>
 
                 <!-- Media Sosial -->
                 <div>
-                    <h4 class="text-[18px] font-bold text-[#253D4E] mb-6"
-                        style="font-family: 'Quicksand', sans-serif;">Ikuti Kami</h4>
+                    <h4 class="text-[18px] font-bold text-[#253D4E] mb-6">Ikuti Kami</h4>
                     <p class="text-[14px] text-gray-600 mb-4">Dapatkan info terbaru dari Amanah Shop</p>
                     <div class="flex gap-3">
                         <!-- Facebook -->
@@ -598,8 +617,7 @@
         <div class="border-t border-gray-200">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
                 <div class="flex flex-col md:flex-row justify-between items-center gap-3 text-[13px] text-gray-500">
-                    <p>&copy; {{ date('Y') }}, <strong class="text-[#3BB77E]">Amanah Shop</strong> - Toko Koperasi
-                        Desa</p>
+                    <p>&copy; {{ date('Y') }}, <strong class="text-[#3BB77E]">Amanah Shop</strong> - Toko Kebutuhan Rumah Tangga & Lifestyle</p>
                     <div class="flex items-center gap-2">
                         <span>Hubungi Kami:</span>
                         <span class="text-[#253D4E] font-bold">+62 896-7436-6444</span>

@@ -9,7 +9,7 @@ export default {
         extend: {
             fontFamily: {
                 sans: [
-                    "Lato",
+                    "Poppins",
                     "ui-sans-serif",
                     "system-ui",
                     "-apple-system",
@@ -17,7 +17,7 @@ export default {
                     "sans-serif",
                 ],
                 heading: [
-                    "Quicksand",
+                    "Poppins",
                     "ui-sans-serif",
                     "system-ui",
                     "-apple-system",

@@ -22,8 +22,16 @@ class ProductController extends Controller
             });
         }
 
+        // Filter by category ID
         if ($request->has('category_id') && $request->category_id) {
             $query->where('category_id', $request->category_id);
+        }
+
+        // Filter by category name (from navbar dropdown)
+        if ($request->has('category') && $request->category) {
+            $query->whereHas('category', function($q) use ($request) {
+                $q->where('name', $request->category);
+            });
         }
 
         if ($request->has('min_price') && $request->min_price) {
@@ -44,7 +52,18 @@ class ProductController extends Controller
         $products = $query->paginate(12);
         $categories = Category::has('products')->get();
 
-        return view('user.products.index', compact('products', 'categories'));
+        // Get selected category name if filtering by category
+        $selectedCategoryName = null;
+        if ($request->has('category') && $request->category) {
+            $selectedCategoryName = $request->category;
+        } elseif ($request->has('category_id') && $request->category_id) {
+            $category = Category::find($request->category_id);
+            if ($category) {
+                $selectedCategoryName = $category->name;
+            }
+        }
+
+        return view('user.products.index', compact('products', 'categories', 'selectedCategoryName'));
     }
     
     public function show(Product $product)
@@ -85,11 +104,19 @@ class ProductController extends Controller
                   ->orWhere('description', 'like', "%{$search}%");
             });
         }
-        
+
+        // Filter by category ID
         if ($request->has('category_id') && $request->category_id) {
             $query->where('category_id', $request->category_id);
         }
-        
+
+        // Filter by category name (from navbar dropdown)
+        if ($request->has('category') && $request->category) {
+            $query->whereHas('category', function($q) use ($request) {
+                $q->where('name', $request->category);
+            });
+        }
+
         if ($request->has('min_price') && $request->min_price) {
             $query->where('price', '>=', $request->min_price);
         }

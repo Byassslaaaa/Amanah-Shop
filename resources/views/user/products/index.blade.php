@@ -24,6 +24,16 @@
                             <span class="ml-1 text-gray-700 font-medium">Produk</span>
                         </div>
                     </li>
+                    @if($selectedCategoryName)
+                    <li>
+                        <div class="flex items-center">
+                            <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span class="ml-1 text-[#3BB77E] font-semibold">{{ $selectedCategoryName }}</span>
+                        </div>
+                    </li>
+                    @endif
                 </ol>
             </nav>
         </div>
@@ -33,20 +43,31 @@
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <!-- Left: Title and Results -->
                 <div>
-                    <h1 class="text-2xl font-bold text-gray-900 mb-1">Produk</h1>
+                    <h1 class="text-2xl font-bold text-gray-900 mb-1">
+                        @if($selectedCategoryName)
+                            Produk {{ $selectedCategoryName }}
+                        @else
+                            Semua Produk
+                        @endif
+                    </h1>
                     <p class="text-sm text-gray-600">
                         Menampilkan <span class="font-semibold text-[#3BB77E]">{{ $products->count() }}</span> dari <span class="font-semibold">{{ $products->total() }}</span> produk
+                        @if($selectedCategoryName)
+                            <span class="text-gray-400">dalam kategori</span> <span class="font-semibold text-[#3BB77E]">{{ $selectedCategoryName }}</span>
+                        @endif
                     </p>
                 </div>
 
                 <!-- Right: View Options and Sort -->
                 <div class="flex items-center gap-3 w-full sm:w-auto">
-                    <!-- Mobile Filter Toggle -->
-                    <button @click="showFilters = !showFilters" class="lg:hidden flex items-center gap-2 px-4 py-2 bg-[#3BB77E] text-white rounded-lg hover:bg-[#2a9d65] transition-colors">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <!-- Filter Toggle Button with Text -->
+                    <button @click="showFilters = !showFilters"
+                            class="flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200"
+                            :class="showFilters ? 'bg-[#3BB77E] text-white shadow-md' : 'bg-white text-gray-700 border border-gray-300 hover:border-[#3BB77E] hover:bg-gray-50'">
+                        <svg class="w-5 h-5 transition-transform duration-300" :class="showFilters ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
                         </svg>
-                        Filter
+                        <span class="text-sm font-medium" x-text="showFilters ? 'Sembunyikan Filter' : 'Tampilkan Filter'"></span>
                     </button>
 
                     <!-- View Toggle -->
@@ -92,32 +113,48 @@
             </div>
         </div>
 
-        <!-- Main Content: Sidebar + Products -->
-        <div class="flex flex-col lg:flex-row gap-6">
+        <!-- Main Content: Sidebar (Left) + Products -->
+        <div class="flex flex-col lg:flex-row lg:items-start gap-6">
+            <!-- Backdrop for Mobile -->
+            <div x-show="showFilters"
+                 @click="showFilters = false"
+                 class="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"
+                 x-transition:enter="transition-opacity ease-out duration-200"
+                 x-transition:enter-start="opacity-0"
+                 x-transition:enter-end="opacity-100"
+                 x-transition:leave="transition-opacity ease-in duration-150"
+                 x-transition:leave-start="opacity-100"
+                 x-transition:leave-end="opacity-0"
+                 x-cloak>
+            </div>
+
             <!-- Sidebar Filters -->
-            <aside class="w-full lg:w-80 xl:w-96 shrink-0"
-                   x-show="showFilters || window.innerWidth >= 1024"
+            <aside class="lg:w-80 xl:w-96 lg:shrink-0 sidebar-filter"
+                   :class="showFilters ? 'fixed lg:relative top-0 left-0 bottom-0 w-80 lg:w-full' : 'hidden'"
                    x-transition:enter="transition ease-out duration-200"
-                   x-transition:enter-start="opacity-0 -translate-x-4"
-                   x-transition:enter-end="opacity-100 translate-0">
-                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 sticky top-24">
+                   x-transition:enter-start="opacity-0 -translate-x-full lg:-translate-x-4"
+                   x-transition:enter-end="opacity-100 translate-x-0"
+                   x-transition:leave="transition ease-in duration-150"
+                   x-transition:leave-start="opacity-100 translate-x-0"
+                   x-transition:leave-end="opacity-0 -translate-x-full lg:-translate-x-4"
+                   x-cloak>
+                <div class="bg-white rounded-none lg:rounded-xl shadow-sm border border-gray-100 p-6 h-full lg:h-auto overflow-y-auto lg:overflow-visible">
                     <form method="GET" action="{{ route('products.index') }}" id="filterForm">
                         <!-- Preserve sort parameter -->
                         <input type="hidden" name="sort" value="{{ request('sort') }}">
+                        <!-- Preserve category name parameter if exists -->
+                        @if($selectedCategoryName && !request('category_id'))
+                            <input type="hidden" name="category" value="{{ $selectedCategoryName }}">
+                        @endif
 
                         <!-- Filter Header -->
-                        <div class="flex items-center justify-between mb-6">
+                        <div class="mb-6">
                             <h3 class="text-lg font-bold text-gray-900 flex items-center gap-2">
                                 <svg class="w-5 h-5 text-[#3BB77E]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
                                 </svg>
                                 Filter Produk
                             </h3>
-                            <button type="button" @click="showFilters = false" class="lg:hidden text-gray-400 hover:text-gray-600">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                                </svg>
-                            </button>
                         </div>
 
                         <!-- Search -->
@@ -141,17 +178,22 @@
                         <div class="mb-6">
                             <label class="block text-sm font-semibold text-gray-700 mb-3">Kategori Produk</label>
                             <div class="space-y-2 max-h-60 overflow-y-auto pr-2">
-                                <label class="flex items-center gap-3 p-2.5 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+                                <label class="flex items-center gap-3 p-2.5 cursor-pointer">
                                     <input type="radio" name="category_id" value=""
-                                           {{ !request('category_id') ? 'checked' : '' }}
-                                           class="w-4 h-4 text-[#3BB77E] focus:ring-[#3BB77E] border-gray-300">
+                                           {{ !$selectedCategoryName ? 'checked' : '' }}
+                                           class="w-4 h-4 text-[#3BB77E] focus:ring-[#3BB77E] border-gray-300"
+                                           onclick="document.querySelector('input[name=category]')?.remove()">
                                     <span class="text-sm text-gray-700 font-medium">Semua Kategori</span>
                                 </label>
                                 @foreach($categories as $category)
-                                <label class="flex items-center gap-3 p-2.5 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+                                @php
+                                    $isSelected = $selectedCategoryName == $category->name;
+                                @endphp
+                                <label class="flex items-center gap-3 p-2.5 cursor-pointer">
                                     <input type="radio" name="category_id" value="{{ $category->id }}"
-                                           {{ request('category_id') == $category->id ? 'checked' : '' }}
-                                           class="w-4 h-4 text-[#3BB77E] focus:ring-[#3BB77E] border-gray-300">
+                                           {{ $isSelected ? 'checked' : '' }}
+                                           class="w-4 h-4 text-[#3BB77E] focus:ring-[#3BB77E] border-gray-300"
+                                           onclick="document.querySelector('input[name=category]')?.remove()">
                                     <span class="text-sm text-gray-700">{{ $category->name }}</span>
                                     <span class="ml-auto text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">
                                         {{ $category->products()->where('status', 'active')->count() }}
@@ -171,47 +213,26 @@
                                     <label class="block text-xs text-gray-600 mb-1">Harga Minimum</label>
                                     <div class="relative">
                                         <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">Rp</span>
-                                        <input type="number" name="min_price" value="{{ request('min_price') }}"
-                                               placeholder="0"
+                                        <input type="text"
+                                               id="min_price_display"
+                                               value="{{ request('min_price') ? number_format(request('min_price'), 0, ',', '.') : '' }}"
+                                               placeholder="Contoh: 50.000"
                                                class="w-full pl-9 pr-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#3BB77E] focus:border-[#3BB77E] text-sm">
+                                        <input type="hidden" name="min_price" id="min_price" value="{{ request('min_price') }}">
                                     </div>
                                 </div>
                                 <div>
                                     <label class="block text-xs text-gray-600 mb-1">Harga Maksimum</label>
                                     <div class="relative">
                                         <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">Rp</span>
-                                        <input type="number" name="max_price" value="{{ request('max_price') }}"
-                                               placeholder="1000000"
+                                        <input type="text"
+                                               id="max_price_display"
+                                               value="{{ request('max_price') ? number_format(request('max_price'), 0, ',', '.') : '' }}"
+                                               placeholder="Contoh: 5.000.000"
                                                class="w-full pl-9 pr-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#3BB77E] focus:border-[#3BB77E] text-sm">
+                                        <input type="hidden" name="max_price" id="max_price" value="{{ request('max_price') }}">
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-
-                        <div class="border-t border-gray-200 pt-6"></div>
-
-                        <!-- Product Type Filter -->
-                        <div class="mb-6">
-                            <label class="block text-sm font-semibold text-gray-700 mb-3">Jenis Produk</label>
-                            <div class="space-y-2">
-                                <label class="flex items-center gap-3 p-2.5 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
-                                    <input type="radio" name="type" value=""
-                                           {{ !request('type') ? 'checked' : '' }}
-                                           class="w-4 h-4 text-[#3BB77E] focus:ring-[#3BB77E] border-gray-300">
-                                    <span class="text-sm text-gray-700 font-medium">Semua Jenis</span>
-                                </label>
-                                <label class="flex items-center gap-3 p-2.5 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
-                                    <input type="radio" name="type" value="barang"
-                                           {{ request('type') == 'barang' ? 'checked' : '' }}
-                                           class="w-4 h-4 text-[#3BB77E] focus:ring-[#3BB77E] border-gray-300">
-                                    <span class="text-sm text-gray-700">Produk Barang</span>
-                                </label>
-                                <label class="flex items-center gap-3 p-2.5 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
-                                    <input type="radio" name="type" value="jasa"
-                                           {{ request('type') == 'jasa' ? 'checked' : '' }}
-                                           class="w-4 h-4 text-[#3BB77E] focus:ring-[#3BB77E] border-gray-300">
-                                    <span class="text-sm text-gray-700">Produk Jasa</span>
-                                </label>
                             </div>
                         </div>
 
@@ -231,10 +252,13 @@
             </aside>
 
             <!-- Products Grid -->
-            <div class="flex-1">
+            <div class="flex-1 flex flex-col">
                 @if($products->count() > 0)
+                    <div class="flex-1">
                     <!-- Grid View -->
-                    <div x-show="view === 'grid'" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-8">
+                    <div x-show="view === 'grid'"
+                         class="grid gap-4 mb-8"
+                         :class="showFilters ? 'grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4' : 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-5 2xl:grid-cols-6'">
                         @foreach($products as $product)
                             @php
                                 // Calculate actual sold quantity from orders
@@ -259,19 +283,6 @@
                                             </svg>
                                         </div>
                                     @endif
-
-                                    <!-- Stock Badge -->
-                                    <div class="absolute top-3 left-3">
-                                        @if($product->stock > 50)
-                                            <span class="bg-green-500 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-lg">Stok Banyak</span>
-                                        @elseif($product->stock > 10)
-                                            <span class="bg-blue-500 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-lg">Tersedia</span>
-                                        @elseif($product->stock > 0)
-                                            <span class="bg-orange-500 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-lg animate-pulse">Stok Terbatas</span>
-                                        @else
-                                            <span class="bg-red-500 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-lg">Habis</span>
-                                        @endif
-                                    </div>
 
                                     <!-- Type Badge -->
                                     @if($product->type === 'jasa')
@@ -379,19 +390,6 @@
                                             </svg>
                                         </div>
                                     @endif
-
-                                    <!-- Stock Badge -->
-                                    <div class="absolute top-3 left-3">
-                                        @if($product->stock > 50)
-                                            <span class="bg-green-500 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-lg">Stok Banyak</span>
-                                        @elseif($product->stock > 10)
-                                            <span class="bg-blue-500 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-lg">Tersedia</span>
-                                        @elseif($product->stock > 0)
-                                            <span class="bg-orange-500 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-lg animate-pulse">Stok Terbatas</span>
-                                        @else
-                                            <span class="bg-red-500 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-lg">Habis</span>
-                                        @endif
-                                    </div>
                                 </div>
 
                                 <!-- Product Info -->
@@ -469,9 +467,10 @@
                             </a>
                         @endforeach
                     </div>
+                    </div>
 
                     <!-- Pagination -->
-                    <div class="mt-8">
+                    <div class="mt-auto pt-8">
                         {{ $products->appends(request()->query())->links('vendor.pagination.custom') }}
                     </div>
                 @else
@@ -496,41 +495,68 @@
     </div>
 </div>
 
+<style>
+/* Sidebar Filter z-index */
+.sidebar-filter {
+    z-index: 35;
+}
+
+@media (min-width: 1024px) {
+    .sidebar-filter {
+        z-index: auto;
+    }
+}
+</style>
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Auto-submit filter form on radio change
-    const filterForm = document.getElementById('filterForm');
-    const radioInputs = filterForm.querySelectorAll('input[type="radio"]');
+    // Filter will only be applied when "Terapkan Filter" button is clicked
+    // No auto-submit functionality
 
-    radioInputs.forEach(function(radio) {
-        radio.addEventListener('change', function() {
-            filterForm.submit();
+    // Format price input with thousand separator
+    function formatNumber(num) {
+        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+
+    // Handle min price input
+    const minPriceDisplay = document.getElementById('min_price_display');
+    const minPriceHidden = document.getElementById('min_price');
+
+    if (minPriceDisplay) {
+        minPriceDisplay.addEventListener('input', function(e) {
+            // Remove all non-numeric characters
+            let value = e.target.value.replace(/\D/g, '');
+
+            // Update hidden field with raw value
+            minPriceHidden.value = value;
+
+            // Format display value
+            if (value) {
+                e.target.value = formatNumber(value);
+            } else {
+                e.target.value = '';
+            }
         });
-    });
+    }
 
-    // Debounce for price inputs
-    const priceInputs = filterForm.querySelectorAll('input[type="number"]');
-    let priceTimeout;
+    // Handle max price input
+    const maxPriceDisplay = document.getElementById('max_price_display');
+    const maxPriceHidden = document.getElementById('max_price');
 
-    priceInputs.forEach(function(input) {
-        input.addEventListener('input', function() {
-            clearTimeout(priceTimeout);
-            priceTimeout = setTimeout(function() {
-                filterForm.submit();
-            }, 800);
-        });
-    });
+    if (maxPriceDisplay) {
+        maxPriceDisplay.addEventListener('input', function(e) {
+            // Remove all non-numeric characters
+            let value = e.target.value.replace(/\D/g, '');
 
-    // Debounce for search input
-    const searchInput = filterForm.querySelector('input[name="search"]');
-    let searchTimeout;
+            // Update hidden field with raw value
+            maxPriceHidden.value = value;
 
-    if (searchInput) {
-        searchInput.addEventListener('input', function() {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(function() {
-                filterForm.submit();
-            }, 500);
+            // Format display value
+            if (value) {
+                e.target.value = formatNumber(value);
+            } else {
+                e.target.value = '';
+            }
         });
     }
 });

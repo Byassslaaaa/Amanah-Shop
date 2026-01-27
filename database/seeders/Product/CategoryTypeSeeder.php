@@ -14,45 +14,26 @@ class CategoryTypeSeeder extends Seeder
      */
     public function run(): void
     {
-        // Update existing categories with types instead of truncating
-        // Set all existing categories to barang type by default
-        Category::whereNull('type')->orWhere('type', '')->update(['type' => 'barang']);
-
-        // Categories for Barang (Products)
-        $barangCategories = [
-            ['name' => 'Makanan & Minuman', 'type' => 'barang', 'description' => 'Produk makanan dan minuman lokal', 'image' => 'images/categories/makanan-minuman.png'],
-            ['name' => 'Kerajinan Tangan', 'type' => 'barang', 'description' => 'Kerajinan tangan khas daerah', 'image' => 'images/categories/kerajinan-tangan.png'],
-            ['name' => 'Pakaian & Aksesoris', 'type' => 'barang', 'description' => 'Pakaian dan aksesoris tradisional', 'image' => 'images/categories/fashion.png'],
-            ['name' => 'Pertanian', 'type' => 'barang', 'description' => 'Hasil pertanian dan produk organik', 'image' => 'images/categories/pertanian.png'],
-            ['name' => 'Perikanan', 'type' => 'barang', 'description' => 'Hasil perikanan dan olahan ikan', 'image' => 'images/categories/peternakan.png'],
-            ['name' => 'Oleh-oleh', 'type' => 'barang', 'description' => 'Souvenir dan oleh-oleh khas desa', 'image' => 'images/categories/oleh-oleh.png'],
-        ];
-
-        // Categories for Jasa (Services)
-        $jasaCategories = [
-            ['name' => 'Jasa Pertanian', 'type' => 'jasa', 'description' => 'Layanan konsultasi dan pengolahan pertanian'],
-            ['name' => 'Jasa Konstruksi', 'type' => 'jasa', 'description' => 'Layanan konstruksi dan renovasi'],
-            ['name' => 'Jasa Transportasi', 'type' => 'jasa', 'description' => 'Layanan transportasi lokal'],
-            ['name' => 'Jasa Pendidikan', 'type' => 'jasa', 'description' => 'Layanan pendidikan dan pelatihan'],
-            ['name' => 'Jasa Kesehatan', 'type' => 'jasa', 'description' => 'Layanan kesehatan dan pengobatan tradisional'],
-            ['name' => 'Jasa Digital', 'type' => 'jasa', 'description' => 'Layanan digital dan teknologi'],
+        // Categories - Amanah Shop (Toko Kebutuhan Rumah Tangga & Lifestyle)
+        $categories = [
+            ['name' => 'Perabotan', 'description' => 'Lemari, meja, kursi, rak, dan berbagai furniture rumah', 'image' => 'images/categories/perabotan.png'],
+            ['name' => 'Perlengkapan Kamar Tidur', 'description' => 'Kasur, bantal, guling, sprei, selimut, dan perlengkapan tidur', 'image' => 'images/categories/kamar-tidur.png'],
+            ['name' => 'Pakaian', 'description' => 'Pakaian pria, wanita, dan anak-anak', 'image' => 'images/categories/pakaian.png'],
+            ['name' => 'Sepatu & Alas Kaki', 'description' => 'Sepatu formal, casual, sandal, dan berbagai alas kaki', 'image' => 'images/categories/sepatu.png'],
+            ['name' => 'Keperluan Rumah Tangga', 'description' => 'Peralatan dapur, kebersihan, dan keperluan rumah tangga lainnya', 'image' => 'images/categories/rumah-tangga.png'],
+            ['name' => 'Tekstil Rumah', 'description' => 'Karpet, tikar, gorden, taplak, dan tekstil rumah', 'image' => 'images/categories/tekstil.png'],
+            ['name' => 'Aksesoris Rumah', 'description' => 'Hiasan dinding, vas bunga, jam dinding, dan aksesoris dekorasi', 'image' => 'images/categories/aksesoris.png'],
+            ['name' => 'Lain-lain', 'description' => 'Produk lainnya yang tidak masuk kategori di atas', 'image' => 'images/categories/lain-lain.png'],
         ];
 
         // Insert new categories only if they don't exist
-        foreach ($barangCategories as $category) {
+        foreach ($categories as $category) {
             Category::firstOrCreate(
                 ['name' => $category['name']],
                 $category
             );
         }
 
-        foreach ($jasaCategories as $category) {
-            Category::firstOrCreate(
-                ['name' => $category['name']],
-                $category
-            );
-        }
-
-        $this->command->info('Categories with types have been seeded successfully!');
+        $this->command->info('Categories have been seeded successfully!');
     }
 }

@@ -38,7 +38,7 @@
                     d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
                     clip-rule="evenodd" />
             </svg>
-            <h1 class="text-3xl font-bold text-[#253D4E]" style="font-family: 'Quicksand', sans-serif;">
+            <h1 class="text-3xl font-bold text-[#253D4E]" >
                 Produk Favorit Saya
             </h1>
         </div>
@@ -93,7 +93,7 @@
                             <!-- Product Info -->
                             <div class="p-4">
                                 <h3 class="text-base font-bold text-[#253D4E] mb-2 line-clamp-2 group-hover:text-[#3BB77E] transition-colors"
-                                    style="font-family: 'Quicksand', sans-serif;">
+                                    >
                                     {{ $favorite->product->name }}
                                 </h3>
 
@@ -165,7 +165,7 @@
                         d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z">
                     </path>
                 </svg>
-                <h3 class="text-2xl font-bold text-gray-700 mb-2" style="font-family: 'Quicksand', sans-serif;">
+                <h3 class="text-2xl font-bold text-gray-700 mb-2" >
                     Belum Ada Produk Favorit
                 </h3>
                 <p class="text-gray-500 mb-6">
