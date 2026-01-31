@@ -50,6 +50,11 @@ class Product extends Model
         return $this->hasMany(ProductReview::class)->where('status', 'approved');
     }
 
+    public function orderItems()
+    {
+        return $this->hasMany(\App\Models\OrderItem::class);
+    }
+
     public function scopeActive($query)
     {
         return $query->where('status', 'active');

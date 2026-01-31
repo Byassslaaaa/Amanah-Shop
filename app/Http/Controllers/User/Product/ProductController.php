@@ -75,7 +75,24 @@ class ProductController extends Controller
             ->active()
             ->take(4)
             ->get();
-            
+
+        // Track recently viewed products
+        $recentlyViewed = session()->get('recently_viewed', []);
+
+        // Remove the current product if it already exists in the list
+        $recentlyViewed = array_filter($recentlyViewed, function($id) use ($product) {
+            return $id != $product->id;
+        });
+
+        // Add the current product to the beginning of the array
+        array_unshift($recentlyViewed, $product->id);
+
+        // Keep only the last 10 viewed products
+        $recentlyViewed = array_slice($recentlyViewed, 0, 10);
+
+        // Save back to session
+        session()->put('recently_viewed', $recentlyViewed);
+
         return view('user.products.show', compact('product', 'relatedProducts'));
     }
     

@@ -3,30 +3,34 @@
 @section('title', 'Kelola Kategori')
 
 @section('content')
+<div class="p-6">
     <!-- Header -->
-    <div class="flex items-center justify-between mb-8">
+    <div class="flex items-center justify-between mb-6">
         <div>
-            <h1 class="text-3xl font-bold text-gray-900">Kelola Kategori</h1>
-            <p class="text-gray-600 mt-2">Kelola kategori produk di marketplace</p>
+            <h1 class="text-2xl font-bold text-gray-900">Kelola Kategori</h1>
+            <p class="text-sm text-gray-600 mt-1">Kelola kategori produk di marketplace</p>
         </div>
         <a href="{{ route('admin.categories.create') }}"
-            class="bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors">
+            class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            </svg>
             Tambah Kategori
         </a>
     </div>
 
     <!-- Search -->
-    <div class="bg-white rounded-lg shadow p-6 mb-6">
-        <form method="GET" action="{{ route('admin.categories.index') }}" class="flex gap-4">
+    <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6 mb-6">
+        <form method="GET" action="{{ route('admin.categories.index') }}" class="flex gap-3">
             <div class="flex-1">
                 <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari kategori..."
-                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500">
+                    class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
             </div>
-            <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors">
+            <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors">
                 Cari
             </button>
             <a href="{{ route('admin.categories.index') }}"
-                class="bg-gray-500 text-white px-6 py-2 rounded-md hover:bg-gray-600 transition-colors">
+                class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
                 Reset
             </a>
         </form>
@@ -34,9 +38,9 @@
 
     @if ($categories->count() > 0)
         <!-- Categories Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
             @foreach ($categories as $category)
-                <div class="bg-white rounded-lg shadow overflow-hidden hover:shadow-lg transition-shadow">
+                <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden hover:shadow-md transition-shadow">
                     <!-- Category Image -->
                     <div class="h-48 bg-gray-200">
                         @if ($category->image)
@@ -78,11 +82,11 @@
                         <!-- Actions -->
                         <div class="flex space-x-2">
                             <a href="{{ route('admin.categories.show', $category) }}"
-                                class="flex-1 bg-blue-600 text-white py-2 px-3 rounded text-center text-sm font-medium hover:bg-blue-700 transition-colors">
+                                class="flex-1 bg-blue-600 text-white py-2 px-3 rounded-lg text-center text-sm font-medium hover:bg-blue-700 transition-colors">
                                 Lihat
                             </a>
                             <a href="{{ route('admin.categories.edit', $category) }}"
-                                class="flex-1 bg-green-600 text-white py-2 px-3 rounded text-center text-sm font-medium hover:bg-green-700 transition-colors">
+                                class="flex-1 bg-green-600 text-white py-2 px-3 rounded-lg text-center text-sm font-medium hover:bg-green-700 transition-colors">
                                 Edit
                             </a>
                             @if ($category->products_count == 0)
@@ -92,13 +96,13 @@
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit"
-                                        class="w-full bg-red-600 text-white py-2 px-3 rounded text-sm font-medium hover:bg-red-700 transition-colors">
+                                        class="w-full bg-red-600 text-white py-2 px-3 rounded-lg text-sm font-medium hover:bg-red-700 transition-colors">
                                         Hapus
                                     </button>
                                 </form>
                             @else
                                 <span
-                                    class="flex-1 bg-gray-300 text-gray-500 py-2 px-3 rounded text-center text-sm cursor-not-allowed">
+                                    class="flex-1 bg-gray-200 text-gray-400 py-2 px-3 rounded-lg text-center text-sm cursor-not-allowed">
                                     Hapus
                                 </span>
                             @endif
@@ -114,35 +118,42 @@
         </div>
     @else
         <!-- Empty State -->
-        <div class="bg-white rounded-lg shadow p-12 text-center">
+        <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-12 text-center">
             <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
                 </path>
             </svg>
-            <h3 class="text-xl font-semibold text-gray-900 mb-2">
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">
                 {{ request('search') ? 'Kategori Tidak Ditemukan' : 'Belum Ada Kategori' }}
             </h3>
-            <p class="text-gray-600 mb-6">
+            <p class="text-sm text-gray-600 mb-6">
                 {{ request('search') ? 'Tidak ada kategori yang cocok dengan pencarian Anda.' : 'Belum ada kategori yang tersedia. Mulai tambahkan kategori untuk mengorganisir produk.' }}
             </p>
             @if (!request('search'))
                 <a href="{{ route('admin.categories.create') }}"
-                    class="bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors">
+                    class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                    </svg>
                     Tambah Kategori Pertama
                 </a>
             @else
-                <div class="space-x-4">
+                <div class="flex items-center justify-center space-x-3">
                     <a href="{{ route('admin.categories.create') }}"
-                        class="bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors">
+                        class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                        </svg>
                         Tambah Kategori
                     </a>
                     <a href="{{ route('admin.categories.index') }}"
-                        class="bg-gray-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-gray-700 transition-colors">
+                        class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
                         Lihat Semua Kategori
                     </a>
                 </div>
             @endif
         </div>
     @endif
+</div>
 @endsection

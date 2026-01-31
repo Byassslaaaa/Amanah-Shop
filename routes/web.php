@@ -137,6 +137,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     // Category Management
     Route::resource('categories', AdminCategoryController::class);
 
+    // Banner Management
+    Route::resource('banners', \App\Http\Controllers\Admin\BannerController::class);
+
     // Order Management
     Route::get('orders', [AdminOrderController::class, 'index'])->name('orders.index');
     Route::get('orders/{order}', [AdminOrderController::class, 'show'])->name('orders.show');
@@ -163,6 +166,59 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::get('installments/orders/{order}', [\App\Http\Controllers\Admin\Credit\InstallmentController::class, 'show'])->name('installments.show');
         Route::get('installments/{installment}/verify', [\App\Http\Controllers\Admin\Credit\InstallmentController::class, 'verifyForm'])->name('installments.verify-form');
         Route::post('installments/{installment}/verify', [\App\Http\Controllers\Admin\Credit\InstallmentController::class, 'verify'])->name('installments.verify');
+    });
+
+    // Finance Management (Keuangan)
+    Route::prefix('finance')->name('finance.')->group(function () {
+        // Financial Transactions
+        Route::get('transactions', [\App\Http\Controllers\Admin\Finance\FinancialTransactionController::class, 'index'])->name('transactions.index');
+        Route::get('transactions/create', [\App\Http\Controllers\Admin\Finance\FinancialTransactionController::class, 'create'])->name('transactions.create');
+        Route::post('transactions', [\App\Http\Controllers\Admin\Finance\FinancialTransactionController::class, 'store'])->name('transactions.store');
+        Route::get('transactions/{transaction}', [\App\Http\Controllers\Admin\Finance\FinancialTransactionController::class, 'show'])->name('transactions.show');
+        Route::get('transactions/{transaction}/edit', [\App\Http\Controllers\Admin\Finance\FinancialTransactionController::class, 'edit'])->name('transactions.edit');
+        Route::put('transactions/{transaction}', [\App\Http\Controllers\Admin\Finance\FinancialTransactionController::class, 'update'])->name('transactions.update');
+        Route::delete('transactions/{transaction}', [\App\Http\Controllers\Admin\Finance\FinancialTransactionController::class, 'destroy'])->name('transactions.destroy');
+        Route::get('report', [\App\Http\Controllers\Admin\Finance\FinancialTransactionController::class, 'report'])->name('report');
+
+        // Transaction Categories
+        Route::resource('categories', \App\Http\Controllers\Admin\Finance\TransactionCategoryController::class);
+    });
+
+    // Inventory Management (Expanded)
+    Route::prefix('inventory')->name('inventory.')->group(function () {
+        // Inventory Movements
+        Route::get('movements', [\App\Http\Controllers\Admin\Inventory\InventoryMovementController::class, 'index'])->name('movements.index');
+        Route::get('movements/stock-in', [\App\Http\Controllers\Admin\Inventory\InventoryMovementController::class, 'stockInForm'])->name('movements.stock-in-form');
+        Route::post('movements/stock-in', [\App\Http\Controllers\Admin\Inventory\InventoryMovementController::class, 'storeStockIn'])->name('movements.stock-in');
+        Route::get('movements/stock-out', [\App\Http\Controllers\Admin\Inventory\InventoryMovementController::class, 'stockOutForm'])->name('movements.stock-out-form');
+        Route::post('movements/stock-out', [\App\Http\Controllers\Admin\Inventory\InventoryMovementController::class, 'storeStockOut'])->name('movements.stock-out');
+        Route::get('movements/{movement}', [\App\Http\Controllers\Admin\Inventory\InventoryMovementController::class, 'show'])->name('movements.show');
+        Route::get('movements/report', [\App\Http\Controllers\Admin\Inventory\InventoryMovementController::class, 'report'])->name('movements.report');
+
+        // Suppliers
+        Route::resource('suppliers', \App\Http\Controllers\Admin\Inventory\SupplierController::class);
+        Route::post('suppliers/{supplier}/toggle-status', [\App\Http\Controllers\Admin\Inventory\SupplierController::class, 'toggleStatus'])->name('suppliers.toggle-status');
+    });
+
+    // Manual Credits Management (Kredit & Hutang)
+    Route::prefix('credits')->name('credits.')->group(function () {
+        // Manual Credits
+        Route::get('manual', [\App\Http\Controllers\Admin\Credit\ManualCreditController::class, 'index'])->name('manual.index');
+        Route::get('manual/create', [\App\Http\Controllers\Admin\Credit\ManualCreditController::class, 'create'])->name('manual.create');
+        Route::post('manual', [\App\Http\Controllers\Admin\Credit\ManualCreditController::class, 'store'])->name('manual.store');
+        Route::get('manual/{credit}', [\App\Http\Controllers\Admin\Credit\ManualCreditController::class, 'show'])->name('manual.show');
+        Route::get('manual/{credit}/edit', [\App\Http\Controllers\Admin\Credit\ManualCreditController::class, 'edit'])->name('manual.edit');
+        Route::put('manual/{credit}', [\App\Http\Controllers\Admin\Credit\ManualCreditController::class, 'update'])->name('manual.update');
+        Route::delete('manual/{credit}', [\App\Http\Controllers\Admin\Credit\ManualCreditController::class, 'destroy'])->name('manual.destroy');
+        Route::get('manual/{credit}/payment', [\App\Http\Controllers\Admin\Credit\ManualCreditController::class, 'recordPaymentForm'])->name('manual.payment-form');
+        Route::post('manual/{credit}/payment', [\App\Http\Controllers\Admin\Credit\ManualCreditController::class, 'storePayment'])->name('manual.store-payment');
+
+        // Manual Credit Payments
+        Route::get('payments', [\App\Http\Controllers\Admin\Credit\ManualCreditPaymentController::class, 'index'])->name('payments.index');
+        Route::get('payments/overdue', [\App\Http\Controllers\Admin\Credit\ManualCreditPaymentController::class, 'overdueList'])->name('payments.overdue');
+        Route::get('payments/{payment}', [\App\Http\Controllers\Admin\Credit\ManualCreditPaymentController::class, 'show'])->name('payments.show');
+        Route::post('payments/{payment}/verify', [\App\Http\Controllers\Admin\Credit\ManualCreditPaymentController::class, 'verifyPayment'])->name('payments.verify');
+        Route::get('payments/report', [\App\Http\Controllers\Admin\Credit\ManualCreditPaymentController::class, 'report'])->name('payments.report');
     });
 
     // Reports

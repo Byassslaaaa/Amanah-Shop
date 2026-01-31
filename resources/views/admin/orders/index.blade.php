@@ -3,18 +3,24 @@
 @section('title', 'Manajemen Pesanan')
 
 @section('content')
-<div class="p-4 sm:p-6 lg:p-8">
+<div class="p-6">
+    <!-- Page Header -->
+    <div class="mb-6">
+        <h1 class="text-2xl font-bold text-gray-900">Manajemen Pesanan</h1>
+        <p class="text-sm text-gray-600 mt-1">Kelola semua pesanan pelanggan</p>
+    </div>
+
     <!-- Statistics Cards -->
     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
         <!-- Total Orders -->
-        <div class="bg-white rounded-lg shadow-md p-4 border-l-4 border-blue-500">
-            <div class="flex items-center justify-between">
+        <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+            <div class="flex items-start justify-between">
                 <div>
-                    <p class="text-xs text-gray-600 uppercase">Total</p>
-                    <p class="text-2xl font-bold text-gray-800">{{ $stats['total'] }}</p>
+                    <p class="text-xs text-gray-500 font-medium mb-1">Total</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ $stats['total'] }}</p>
                 </div>
-                <div class="bg-blue-100 p-3 rounded-full">
-                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="p-2 rounded-lg bg-blue-50">
+                    <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
                     </svg>
                 </div>
@@ -22,14 +28,14 @@
         </div>
 
         <!-- Pending -->
-        <div class="bg-white rounded-lg shadow-md p-4 border-l-4 border-yellow-500">
-            <div class="flex items-center justify-between">
+        <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+            <div class="flex items-start justify-between">
                 <div>
-                    <p class="text-xs text-gray-600 uppercase">Pending</p>
-                    <p class="text-2xl font-bold text-gray-800">{{ $stats['pending'] }}</p>
+                    <p class="text-xs text-gray-500 font-medium mb-1">Pending</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ $stats['pending'] }}</p>
                 </div>
-                <div class="bg-yellow-100 p-3 rounded-full">
-                    <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="p-2 rounded-lg bg-yellow-50">
+                    <svg class="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
                 </div>
@@ -37,14 +43,14 @@
         </div>
 
         <!-- Processing -->
-        <div class="bg-white rounded-lg shadow-md p-4 border-l-4 border-indigo-500">
-            <div class="flex items-center justify-between">
+        <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+            <div class="flex items-start justify-between">
                 <div>
-                    <p class="text-xs text-gray-600 uppercase">Diproses</p>
-                    <p class="text-2xl font-bold text-gray-800">{{ $stats['processing'] }}</p>
+                    <p class="text-xs text-gray-500 font-medium mb-1">Diproses</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ $stats['processing'] }}</p>
                 </div>
-                <div class="bg-indigo-100 p-3 rounded-full">
-                    <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="p-2 rounded-lg bg-indigo-50">
+                    <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                     </svg>
@@ -53,14 +59,14 @@
         </div>
 
         <!-- Shipped -->
-        <div class="bg-white rounded-lg shadow-md p-4 border-l-4 border-purple-500">
-            <div class="flex items-center justify-between">
+        <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+            <div class="flex items-start justify-between">
                 <div>
-                    <p class="text-xs text-gray-600 uppercase">Dikirim</p>
-                    <p class="text-2xl font-bold text-gray-800">{{ $stats['shipped'] }}</p>
+                    <p class="text-xs text-gray-500 font-medium mb-1">Dikirim</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ $stats['shipped'] }}</p>
                 </div>
-                <div class="bg-purple-100 p-3 rounded-full">
-                    <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="p-2 rounded-lg bg-purple-50">
+                    <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"></path>
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0"></path>
                     </svg>
@@ -69,14 +75,14 @@
         </div>
 
         <!-- Completed -->
-        <div class="bg-white rounded-lg shadow-md p-4 border-l-4 border-green-500">
-            <div class="flex items-center justify-between">
+        <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+            <div class="flex items-start justify-between">
                 <div>
-                    <p class="text-xs text-gray-600 uppercase">Selesai</p>
-                    <p class="text-2xl font-bold text-gray-800">{{ $stats['completed'] }}</p>
+                    <p class="text-xs text-gray-500 font-medium mb-1">Selesai</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ $stats['completed'] }}</p>
                 </div>
-                <div class="bg-green-100 p-3 rounded-full">
-                    <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="p-2 rounded-lg bg-green-50">
+                    <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
                 </div>
@@ -84,14 +90,14 @@
         </div>
 
         <!-- Cancelled -->
-        <div class="bg-white rounded-lg shadow-md p-4 border-l-4 border-red-500">
-            <div class="flex items-center justify-between">
+        <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+            <div class="flex items-start justify-between">
                 <div>
-                    <p class="text-xs text-gray-600 uppercase">Batal</p>
-                    <p class="text-2xl font-bold text-gray-800">{{ $stats['cancelled'] }}</p>
+                    <p class="text-xs text-gray-500 font-medium mb-1">Batal</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ $stats['cancelled'] }}</p>
                 </div>
-                <div class="bg-red-100 p-3 rounded-full">
-                    <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="p-2 rounded-lg bg-red-50">
+                    <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
                 </div>
@@ -100,12 +106,12 @@
     </div>
 
     <!-- Filters & Search -->
-    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
-        <h3 class="text-lg font-semibold text-gray-800 mb-4">Filter & Pencarian</h3>
+    <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6 mb-6">
+        <h3 class="text-base font-semibold text-gray-900 mb-4">Filter & Pencarian</h3>
         <form method="GET" action="{{ route('admin.orders.index') }}" class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Status Pesanan</label>
-                <select name="status" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                <select name="status" class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                     <option value="">Semua Status</option>
                     <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>Pending</option>
                     <option value="processing" {{ request('status') === 'processing' ? 'selected' : '' }}>Processing</option>
@@ -116,7 +122,7 @@
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Status Pembayaran</label>
-                <select name="payment_status" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                <select name="payment_status" class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                     <option value="">Semua Status</option>
                     <option value="unpaid" {{ request('payment_status') === 'unpaid' ? 'selected' : '' }}>Belum Bayar</option>
                     <option value="pending" {{ request('payment_status') === 'pending' ? 'selected' : '' }}>Pending</option>
@@ -125,40 +131,40 @@
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Cari Pesanan</label>
-                <input type="text" name="search" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                <input type="text" name="search" class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                        placeholder="No. Order / Nama Customer" value="{{ request('search') }}">
             </div>
             <div class="md:col-span-3 flex gap-3">
-                <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-medium transition-colors">
-                    <i class="fas fa-search mr-2"></i>Filter
+                <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors">
+                    Filter
                 </button>
-                <a href="{{ route('admin.orders.index') }}" class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg font-medium transition-colors">
-                    <i class="fas fa-redo mr-2"></i>Reset
+                <a href="{{ route('admin.orders.index') }}" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
+                    Reset
                 </a>
             </div>
         </form>
     </div>
 
     <!-- Orders Table -->
-    <div class="bg-white rounded-lg shadow-md overflow-hidden">
-        <div class="px-6 py-4 border-b border-gray-200">
-            <h3 class="text-lg font-semibold text-gray-800">Daftar Pesanan</h3>
+    <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-100">
+            <h3 class="text-base font-semibold text-gray-900">Daftar Pesanan</h3>
         </div>
         <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200">
+            <table class="min-w-full divide-y divide-gray-100">
                 <thead class="bg-gray-50">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No. Order</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pembayaran</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jasa Kirim</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">No. Order</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Customer</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Tanggal</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Total</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Pembayaran</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Status</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Jasa Kirim</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Aksi</th>
                     </tr>
                 </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
+                <tbody class="bg-white divide-y divide-gray-100">
                     @forelse($orders as $order)
                         <tr class="hover:bg-gray-50 transition-colors">
                             <td class="px-6 py-4 whitespace-nowrap">
@@ -220,7 +226,7 @@
                                 @endif
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                <a href="{{ route('admin.orders.show', $order) }}" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg inline-flex items-center transition-colors">
+                                <a href="{{ route('admin.orders.show', $order) }}" class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors">
                                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
