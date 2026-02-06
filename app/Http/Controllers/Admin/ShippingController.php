@@ -21,10 +21,7 @@ class ShippingController extends Controller
      */
     public function create(Order $order)
     {
-        // Check if order belongs to admin's village
-        if (!auth()->user()->isSuperAdmin() && $order->items->first()->village_id !== auth()->user()->village_id) {
-            abort(403, 'Unauthorized');
-        }
+        // Single shop - no village authorization check needed
 
         // Check if order is paid
         if ($order->payment_status !== 'paid') {
@@ -42,10 +39,7 @@ class ShippingController extends Controller
      */
     public function store(Request $request, Order $order)
     {
-        // Check if order belongs to admin's village
-        if (!auth()->user()->isSuperAdmin() && $order->items->first()->village_id !== auth()->user()->village_id) {
-            abort(403, 'Unauthorized');
-        }
+        // Single shop - no village authorization check needed
 
         $validated = $request->validate([
             'shipping_courier' => 'required|string|max:50',
@@ -94,10 +88,7 @@ class ShippingController extends Controller
      */
     public function createShipment(Request $request, Order $order)
     {
-        // Check if order belongs to admin's village
-        if (!auth()->user()->isSuperAdmin() && $order->items->first()->village_id !== auth()->user()->village_id) {
-            abort(403, 'Unauthorized');
-        }
+        // Single shop - no village authorization check needed
 
         // Check if order is paid
         if ($order->payment_status !== 'paid') {
@@ -111,12 +102,12 @@ class ShippingController extends Controller
                 ->with('error', 'Order ini sudah dalam proses pengiriman.');
         }
 
-        // Get village data
-        $village = $order->items->first()->product->village;
+        // Get shop origin from config
+        $shopOrigin = config('biteship.shop_origin');
 
-        if (!$village->latitude || !$village->longitude) {
+        if (!$shopOrigin['latitude'] || !$shopOrigin['longitude']) {
             return redirect()->back()
-                ->with('error', 'Desa belum mengatur koordinat lokasi pengiriman.');
+                ->with('error', 'Toko belum mengatur koordinat lokasi pengiriman. Silakan hubungi administrator.');
         }
 
         // Parse shipping service (format: jne-reg, jnt-ez, etc)
@@ -140,18 +131,18 @@ class ShippingController extends Controller
 
         // Create shipment via Biteship
         $result = $this->biteshipService->createOrder([
-            'shipper_name' => $village->name,
-            'shipper_phone' => $village->phone ?? '081234567890',
-            'shipper_email' => $village->email ?? 'noreply@sidesa.com',
-            'shipper_organization' => 'SiDesa - ' . $village->name,
+            'shipper_name' => $shopOrigin['contact_name'],
+            'shipper_phone' => $shopOrigin['contact_phone'],
+            'shipper_email' => env('MAIL_FROM_ADDRESS', 'noreply@amanahshop.com'),
+            'shipper_organization' => $shopOrigin['contact_name'],
 
-            'origin_name' => $village->name,
-            'origin_phone' => $village->phone ?? '081234567890',
-            'origin_address' => $village->address ?? $village->name,
-            'origin_note' => 'Desa ' . $village->name,
-            'origin_postal_code' => $village->origin_postal_code ?? '12345',
-            'origin_latitude' => (float) $village->latitude,
-            'origin_longitude' => (float) $village->longitude,
+            'origin_name' => $shopOrigin['contact_name'],
+            'origin_phone' => $shopOrigin['contact_phone'],
+            'origin_address' => $shopOrigin['address'],
+            'origin_note' => $shopOrigin['note'],
+            'origin_postal_code' => $shopOrigin['postal_code'],
+            'origin_latitude' => (float) $shopOrigin['latitude'],
+            'origin_longitude' => (float) $shopOrigin['longitude'],
 
             'destination_name' => $order->shippingAddress->recipient_name,
             'destination_phone' => $order->shippingAddress->phone,
@@ -159,8 +150,8 @@ class ShippingController extends Controller
             'destination_address' => $order->shippingAddress->full_address,
             'destination_postal_code' => $order->shippingAddress->postal_code ?? '12345',
             'destination_note' => $order->shippingAddress->notes ?? '',
-            'destination_latitude' => (float) $order->shippingAddress->latitude,
-            'destination_longitude' => (float) $order->shippingAddress->longitude,
+            'destination_latitude' => (float) ($order->shippingAddress->latitude ?? 0),
+            'destination_longitude' => (float) ($order->shippingAddress->longitude ?? 0),
 
             'courier_company' => $courierCode,
             'courier_type' => $courierType,

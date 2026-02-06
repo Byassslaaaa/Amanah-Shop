@@ -111,7 +111,7 @@ class BiteshipService
                 'shipper_contact_name' => $params['shipper_name'],
                 'shipper_contact_phone' => $params['shipper_phone'],
                 'shipper_contact_email' => $params['shipper_email'] ?? '',
-                'shipper_organization' => $params['shipper_organization'] ?? 'SiDesa',
+                'shipper_organization' => $params['shipper_organization'] ?? 'Amanah Shop',
                 'origin_contact_name' => $params['origin_name'],
                 'origin_contact_phone' => $params['origin_phone'],
                 'origin_address' => $params['origin_address'],

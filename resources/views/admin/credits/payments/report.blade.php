@@ -10,7 +10,7 @@
             <h1 class="text-2xl font-bold text-gray-900">Laporan Pembayaran Kredit</h1>
             <p class="text-sm text-gray-600 mt-1">Ringkasan pembayaran kredit manual</p>
         </div>
-        <a href="{{ route('admin.credit-payments.index') }}"
+        <a href="{{ route('admin.credits.payments.index') }}"
            class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 hover:bg-gray-50 rounded-lg transition-colors">
             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
@@ -19,36 +19,30 @@
         </a>
     </div>
 
+    <!-- Date Filter -->
+    <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6 mb-6">
+        <form method="GET" action="{{ route('admin.credits.payments.report') }}" class="flex items-end space-x-4">
+            <div class="flex-1">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Dari Tanggal</label>
+                <input type="date" name="start_date" value="{{ $startDate }}"
+                    class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div class="flex-1">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Sampai Tanggal</label>
+                <input type="date" name="end_date" value="{{ $endDate }}"
+                    class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500">
+            </div>
+            <button type="submit" class="px-6 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors">
+                Tampilkan
+            </button>
+            <a href="{{ route('admin.credits.payments.report') }}" class="px-6 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
+                Reset
+            </a>
+        </form>
+    </div>
+
     <!-- Summary Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-sm text-gray-600">Total Kredit Aktif</p>
-                    <p class="text-2xl font-bold text-gray-900 mt-1">{{ $activeCredits }}</p>
-                </div>
-                <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                    </svg>
-                </div>
-            </div>
-        </div>
-
-        <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-sm text-gray-600">Total Piutang</p>
-                    <p class="text-2xl font-bold text-orange-600 mt-1">Rp{{ number_format($totalReceivable, 0, ',', '.') }}</p>
-                </div>
-                <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
-                    <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                </div>
-            </div>
-        </div>
-
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
             <div class="flex items-center justify-between">
                 <div>
@@ -66,7 +60,21 @@
         <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm text-gray-600">Jatuh Tempo</p>
+                    <p class="text-sm text-gray-600">Menunggu Pembayaran</p>
+                    <p class="text-2xl font-bold text-yellow-600 mt-1">Rp{{ number_format($totalPending, 0, ',', '.') }}</p>
+                </div>
+                <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                    <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-600">Total Jatuh Tempo</p>
                     <p class="text-2xl font-bold text-red-600 mt-1">Rp{{ number_format($totalOverdue, 0, ',', '.') }}</p>
                 </div>
                 <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
@@ -78,100 +86,90 @@
         </div>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <!-- Monthly Payment Trend -->
-        <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
-            <h2 class="text-lg font-semibold text-gray-900 mb-4">Tren Pembayaran 6 Bulan Terakhir</h2>
-            @if(count($monthlyPayments) > 0)
-            <div class="space-y-3">
-                @php
-                    $maxPayment = collect($monthlyPayments)->max('total');
-                @endphp
-                @foreach($monthlyPayments as $data)
-                <div>
-                    <div class="flex items-center justify-between mb-1">
-                        <span class="text-sm text-gray-600">{{ $data['month'] }}</span>
-                        <span class="text-sm font-semibold text-green-600">Rp{{ number_format($data['total'], 0, ',', '.') }}</span>
-                    </div>
-                    <div class="w-full bg-gray-100 rounded-full h-2">
-                        <div class="bg-green-500 h-2 rounded-full" style="width: {{ $maxPayment > 0 ? ($data['total'] / $maxPayment * 100) : 0 }}%"></div>
-                    </div>
+    <!-- Payment Trend -->
+    <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6 mb-6">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">Tren Pembayaran 6 Bulan Terakhir</h2>
+        @if(count($paymentTrend) > 0)
+        <div class="space-y-3">
+            @php
+                $maxAmount = collect($paymentTrend)->max('amount');
+            @endphp
+            @foreach($paymentTrend as $data)
+            <div>
+                <div class="flex items-center justify-between mb-1">
+                    <span class="text-sm text-gray-600">{{ $data['month'] }}</span>
+                    <span class="text-sm font-semibold text-green-600">Rp{{ number_format($data['amount'], 0, ',', '.') }}</span>
                 </div>
-                @endforeach
+                <div class="w-full bg-gray-100 rounded-full h-2">
+                    <div class="bg-green-500 h-2 rounded-full" style="width: {{ $maxAmount > 0 ? ($data['amount'] / $maxAmount * 100) : 0 }}%"></div>
+                </div>
             </div>
-            @else
-            <div class="text-center py-8">
-                <p class="text-sm text-gray-500">Tidak ada data pembayaran</p>
-            </div>
-            @endif
+            @endforeach
         </div>
-
-        <!-- Payment Status Distribution -->
-        <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
-            <h2 class="text-lg font-semibold text-gray-900 mb-4">Distribusi Status Pembayaran</h2>
-            <div class="space-y-4">
-                <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg">
-                    <div class="flex items-center">
-                        <div class="w-3 h-3 bg-green-500 rounded-full mr-3"></div>
-                        <span class="text-sm text-gray-700">Lunas</span>
-                    </div>
-                    <span class="text-sm font-semibold text-green-600">{{ $statusCounts['paid'] ?? 0 }}</span>
-                </div>
-                <div class="flex items-center justify-between p-3 bg-yellow-50 rounded-lg">
-                    <div class="flex items-center">
-                        <div class="w-3 h-3 bg-yellow-500 rounded-full mr-3"></div>
-                        <span class="text-sm text-gray-700">Sebagian</span>
-                    </div>
-                    <span class="text-sm font-semibold text-yellow-600">{{ $statusCounts['partial'] ?? 0 }}</span>
-                </div>
-                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                    <div class="flex items-center">
-                        <div class="w-3 h-3 bg-gray-500 rounded-full mr-3"></div>
-                        <span class="text-sm text-gray-700">Menunggu</span>
-                    </div>
-                    <span class="text-sm font-semibold text-gray-600">{{ $statusCounts['pending'] ?? 0 }}</span>
-                </div>
-            </div>
+        @else
+        <div class="text-center py-8">
+            <p class="text-sm text-gray-500">Tidak ada data pembayaran</p>
         </div>
+        @endif
     </div>
 
-    <!-- Top Debtors -->
-    <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden mt-6">
+    <!-- Payments Table -->
+    <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
         <div class="p-6 border-b border-gray-100">
-            <h2 class="text-lg font-semibold text-gray-900">Pelanggan dengan Sisa Hutang Terbesar</h2>
+            <h2 class="text-lg font-semibold text-gray-900">Daftar Pembayaran Periode Ini</h2>
         </div>
-        @if(count($topDebtors) > 0)
+        @if($payments->count() > 0)
         <div class="overflow-x-auto">
             <table class="w-full">
                 <thead class="bg-gray-50 border-b border-gray-200">
                     <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Jatuh Tempo</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Kredit</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Pelanggan</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Kredit Aktif</th>
-                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Total Kredit</th>
-                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Sudah Dibayar</th>
-                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Sisa Hutang</th>
+                        <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Cicilan</th>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Tagihan</th>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Dibayar</th>
+                        <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Status</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200">
-                    @foreach($topDebtors as $debtor)
+                    @foreach($payments as $payment)
                     <tr class="hover:bg-gray-50">
-                        <td class="px-6 py-4">
-                            <p class="text-sm font-medium text-gray-900">{{ $debtor->customer_name }}</p>
-                            @if($debtor->customer_phone)
-                            <p class="text-xs text-gray-500">{{ $debtor->customer_phone }}</p>
-                            @endif
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                            {{ $payment->due_date->format('d M Y') }}
                         </td>
-                        <td class="px-6 py-4 text-sm text-gray-600">
-                            {{ $debtor->credit_count }} kredit
+                        <td class="px-6 py-4">
+                            <a href="{{ route('admin.credits.manual.show', $payment->manualCredit) }}" class="text-sm font-medium text-blue-600 hover:text-blue-900">
+                                {{ $payment->manualCredit->credit_number }}
+                            </a>
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-900">
+                            {{ $payment->manualCredit->customer_name }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-600">
+                            Ke-{{ $payment->installment_number }}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900">
-                            Rp{{ number_format($debtor->total_amount, 0, ',', '.') }}
+                            Rp{{ number_format($payment->amount_due, 0, ',', '.') }}
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-green-600">
-                            Rp{{ number_format($debtor->total_paid, 0, ',', '.') }}
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-semibold text-green-600">
+                            Rp{{ number_format($payment->amount_paid, 0, ',', '.') }}
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-bold text-red-600">
-                            Rp{{ number_format($debtor->remaining, 0, ',', '.') }}
+                        <td class="px-6 py-4 whitespace-nowrap text-center">
+                            @switch($payment->status)
+                                @case('paid')
+                                    <span class="px-2 py-1 text-xs font-semibold bg-green-100 text-green-800 rounded-full">Lunas</span>
+                                    @break
+                                @case('partial')
+                                    <span class="px-2 py-1 text-xs font-semibold bg-yellow-100 text-yellow-800 rounded-full">Sebagian</span>
+                                    @break
+                                @case('pending')
+                                    <span class="px-2 py-1 text-xs font-semibold bg-gray-100 text-gray-800 rounded-full">Menunggu</span>
+                                    @break
+                                @case('overdue')
+                                    <span class="px-2 py-1 text-xs font-semibold bg-red-100 text-red-800 rounded-full">Jatuh Tempo</span>
+                                    @break
+                            @endswitch
                         </td>
                     </tr>
                     @endforeach
@@ -180,7 +178,7 @@
         </div>
         @else
         <div class="p-12 text-center">
-            <p class="text-sm text-gray-500">Tidak ada data hutang</p>
+            <p class="text-gray-500">Tidak ada pembayaran dalam periode ini</p>
         </div>
         @endif
     </div>

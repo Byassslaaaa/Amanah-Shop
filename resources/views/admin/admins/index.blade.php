@@ -97,12 +97,8 @@
                                 @endif
                             </td>
                             <td class="px-6 py-4">
-                                @if($admin->village)
-                                    <div class="text-sm text-gray-900">{{ $admin->village->name }}</div>
-                                    <div class="text-xs text-gray-500">{{ $admin->village->district }}, {{ $admin->village->city }}</div>
-                                @else
-                                    <span class="text-sm text-gray-400 italic">-</span>
-                                @endif
+                                <div class="text-sm text-gray-900">Amanah Shop</div>
+                                <div class="text-xs text-gray-500">Toko Utama</div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="text-sm text-gray-700">{{ $admin->phone ?? '-' }}</div>

@@ -11,10 +11,7 @@ class CartController extends Controller
 {
     public function index()
     {
-        $cartItems = auth()->user()->carts()->with(['product.category', 'product.village'])->get();
-
-        // Group by village untuk tampilan
-        $groupedByVillage = $cartItems->groupBy('product.village_id');
+        $cartItems = auth()->user()->carts()->with(['product.category'])->get();
 
         // Hitung total hanya dari item yang selected
         $total = $cartItems->where('is_selected', true)->sum(function ($item) {
@@ -23,12 +20,10 @@ class CartController extends Controller
 
         $selectedCount = $cartItems->where('is_selected', true)->count();
 
-        // Check if any selected item's village hasn't configured shipping
-        $hasUnConfiguredShipping = $cartItems->where('is_selected', true)->contains(function ($item) {
-            return !$item->product->village || !$item->product->village->origin_city_id;
-        });
+        // Single shop - no need to check village shipping config
+        $hasUnConfiguredShipping = false;
 
-        return view('user.cart.index', compact('cartItems', 'groupedByVillage', 'total', 'selectedCount', 'hasUnConfiguredShipping'));
+        return view('user.cart.index', compact('cartItems', 'total', 'selectedCount', 'hasUnConfiguredShipping'));
     }
     
     public function add(Request $request)
@@ -45,11 +40,6 @@ class CartController extends Controller
             return back()->with('error', 'Produk ini sedang tidak tersedia.');
         }
 
-        // Check if village has configured shipping location
-        if (!$product->village->origin_city_id) {
-            return back()->with('error', 'Maaf, desa penjual belum mengatur lokasi pengiriman. Produk ini belum bisa dipesan saat ini.');
-        }
-
         // Unselect semua item lain di keranjang
         Cart::where('user_id', auth()->id())->update(['is_selected' => false]);
 
@@ -58,12 +48,23 @@ class CartController extends Controller
                    ->first();
 
         if ($cart) {
+            // Check stock availability
+            $newQuantity = $cart->quantity + $quantity;
+            if ($newQuantity > $product->stock) {
+                return back()->with('error', "Stok tidak mencukupi. Stok tersedia: {$product->stock}, sudah di keranjang: {$cart->quantity}");
+            }
+
             // Update quantity dan set selected = true
             $cart->update([
-                'quantity' => $cart->quantity + $quantity,
+                'quantity' => $newQuantity,
                 'is_selected' => true
             ]);
         } else {
+            // Check stock availability for new cart item
+            if ($quantity > $product->stock) {
+                return back()->with('error', "Stok tidak mencukupi. Stok tersedia: {$product->stock}");
+            }
+
             // Buat cart baru dengan selected = true
             Cart::create([
                 'user_id' => auth()->id(),
@@ -81,13 +82,19 @@ class CartController extends Controller
         if ($cart->user_id !== auth()->id()) {
             abort(403);
         }
-        
+
         $request->validate([
             'quantity' => 'required|integer|min:1|max:100'
         ]);
-        
+
+        // Check stock availability
+        $product = $cart->product;
+        if ($request->quantity > $product->stock) {
+            return back()->with('error', "Stok tidak mencukupi. Stok tersedia: {$product->stock}");
+        }
+
         $cart->update(['quantity' => $request->quantity]);
-        
+
         return back()->with('success', 'Keranjang berhasil diperbarui!');
     }
     

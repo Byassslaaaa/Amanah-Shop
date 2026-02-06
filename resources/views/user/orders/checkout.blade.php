@@ -673,9 +673,9 @@ async function calculateShippingBiteship() {
         // Single shop - use default origin from env or config
         // For Amanah Shop, all products ship from one location
         const shopOrigin = {
-            latitude: {{ config('services.biteship.default_origin_lat', -6.175110) }},
-            longitude: {{ config('services.biteship.default_origin_lng', 106.865036) }},
-            postal_code: '{{ config('services.biteship.default_origin_postal', '12345') }}'
+            latitude: {{ config('biteship.shop_origin.latitude', -6.175110) }},
+            longitude: {{ config('biteship.shop_origin.longitude', 106.865036) }},
+            postal_code: '{{ config('biteship.shop_origin.postal_code', '12345') }}'
         };
 
         // Map all cart items for shipping

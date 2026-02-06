@@ -144,8 +144,12 @@
             <div class="text-center">
                 <h3 class="text-2xl font-bold text-[#253D4E] mb-4" >Tentang Kami</h3>
                 <p class="text-gray-600 leading-relaxed">
-                    Amanah Shop adalah toko online yang menyediakan berbagai kebutuhan rumah tangga & lifestyle berkualitas
-                    dengan harga terjangkau dan sistem pembayaran yang fleksibel.
+                    @if($aboutContent && $aboutContent->content)
+                        {{ Str::limit($aboutContent->content, 200) }}
+                    @else
+                        Amanah Shop adalah toko online yang menyediakan berbagai kebutuhan rumah tangga & lifestyle berkualitas
+                        dengan harga terjangkau dan sistem pembayaran yang fleksibel.
+                    @endif
                 </p>
             </div>
 
@@ -153,8 +157,12 @@
             <div class="text-center">
                 <h3 class="text-2xl font-bold text-[#253D4E] mb-4" >Visi Kami</h3>
                 <p class="text-gray-600 leading-relaxed">
-                    Menjadi toko online terpercaya dan pilihan utama untuk kebutuhan rumah tangga & lifestyle dengan
-                    menawarkan produk berkualitas dan sistem pembayaran yang mudah.
+                    @if($aboutContent && $aboutContent->vision)
+                        {{ $aboutContent->vision }}
+                    @else
+                        Menjadi toko online terpercaya dan pilihan utama untuk kebutuhan rumah tangga & lifestyle dengan
+                        menawarkan produk berkualitas dan sistem pembayaran yang mudah.
+                    @endif
                 </p>
             </div>
 
@@ -163,30 +171,43 @@
                 <h3 class="text-2xl font-bold text-[#253D4E] mb-4" >Misi Kami</h3>
                 <div class="text-left text-gray-600 leading-relaxed">
                     <ul class="space-y-2">
-                        <li class="flex items-start">
-                            <svg class="w-5 h-5 text-[#3BB77E] mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                            </svg>
-                            <span class="text-sm">Produk berkualitas harga terjangkau</span>
-                        </li>
-                        <li class="flex items-start">
-                            <svg class="w-5 h-5 text-[#3BB77E] mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                            </svg>
-                            <span class="text-sm">Pembayaran tunai & cicilan</span>
-                        </li>
-                        <li class="flex items-start">
-                            <svg class="w-5 h-5 text-[#3BB77E] mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                            </svg>
-                            <span class="text-sm">Layanan responsif & profesional</span>
-                        </li>
-                        <li class="flex items-start">
-                            <svg class="w-5 h-5 text-[#3BB77E] mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                            </svg>
-                            <span class="text-sm">Transaksi transparan & aman</span>
-                        </li>
+                        @if($aboutContent && $aboutContent->mission)
+                            @foreach(explode("\n", $aboutContent->mission) as $mission)
+                                @if(trim($mission))
+                                    <li class="flex items-start">
+                                        <svg class="w-5 h-5 text-[#3BB77E] mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                        </svg>
+                                        <span class="text-sm">{{ trim($mission) }}</span>
+                                    </li>
+                                @endif
+                            @endforeach
+                        @else
+                            <li class="flex items-start">
+                                <svg class="w-5 h-5 text-[#3BB77E] mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
+                                <span class="text-sm">Produk berkualitas harga terjangkau</span>
+                            </li>
+                            <li class="flex items-start">
+                                <svg class="w-5 h-5 text-[#3BB77E] mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
+                                <span class="text-sm">Pembayaran tunai & cicilan</span>
+                            </li>
+                            <li class="flex items-start">
+                                <svg class="w-5 h-5 text-[#3BB77E] mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
+                                <span class="text-sm">Layanan responsif & profesional</span>
+                            </li>
+                            <li class="flex items-start">
+                                <svg class="w-5 h-5 text-[#3BB77E] mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
+                                <span class="text-sm">Transaksi transparan & aman</span>
+                            </li>
+                        @endif
                     </ul>
                 </div>
             </div>
@@ -199,23 +220,23 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="grid grid-cols-2 md:grid-cols-5 gap-8">
             <div class="text-center text-white">
-                <div class="text-5xl font-bold mb-2" >5+</div>
+                <div class="text-5xl font-bold mb-2" >{{ $aboutContent->years_operating ?? 5 }}+</div>
                 <p class="text-sm opacity-90">Tahun Beroperasi</p>
             </div>
             <div class="text-center text-white">
-                <div class="text-5xl font-bold mb-2" >1000+</div>
+                <div class="text-5xl font-bold mb-2" >{{ number_format($aboutContent->happy_customers ?? 1000) }}+</div>
                 <p class="text-sm opacity-90">Pelanggan Puas</p>
             </div>
             <div class="text-center text-white">
-                <div class="text-5xl font-bold mb-2" >500+</div>
+                <div class="text-5xl font-bold mb-2" >{{ number_format($aboutContent->products_sold ?? 500) }}+</div>
                 <p class="text-sm opacity-90">Produk Terjual</p>
             </div>
             <div class="text-center text-white">
-                <div class="text-5xl font-bold mb-2" >10+</div>
+                <div class="text-5xl font-bold mb-2" >{{ $aboutContent->team_members ?? 10 }}+</div>
                 <p class="text-sm opacity-90">Tim Profesional</p>
             </div>
             <div class="text-center text-white">
-                <div class="text-5xl font-bold mb-2" >200+</div>
+                <div class="text-5xl font-bold mb-2" >{{ number_format($aboutContent->product_variants ?? 200) }}+</div>
                 <p class="text-sm opacity-90">Varian Produk</p>
             </div>
         </div>

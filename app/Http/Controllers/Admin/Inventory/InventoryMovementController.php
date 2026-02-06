@@ -51,38 +51,123 @@ class InventoryMovementController extends Controller
     {
         $products = Product::orderBy('name')->get();
         $suppliers = Supplier::active()->orderBy('name')->get();
+        $categories = \App\Models\Product\Category::orderBy('name')->get();
 
-        return view('admin.inventory.movements.stock-in', compact('products', 'suppliers'));
+        return view('admin.inventory.movements.stock-in', compact('products', 'suppliers', 'categories'));
     }
 
     public function storeStockIn(Request $request)
     {
-        $request->validate([
-            'product_id' => 'required|exists:products,id',
-            'supplier_id' => 'required|exists:suppliers,id',
-            'quantity' => 'required|integer|min:1',
-            'unit_price' => 'required|numeric|min:0',
-            'document_number' => 'nullable|string|max:100',
-            'notes' => 'nullable|string'
-        ]);
+        // Scenario 1: Bookkeeping only (no web display)
+        if ($request->display_on_web === 'no') {
+            $request->validate([
+                'item_name' => 'required|string|max:255',
+                'supplier_id' => 'required|exists:suppliers,id',
+                'quantity' => 'required|integer|min:1',
+                'unit_price' => 'required|numeric|min:0',
+                'document_number' => 'nullable|string|max:100',
+                'notes' => 'nullable|string'
+            ]);
 
-        $product = Product::findOrFail($request->product_id);
+            InventoryMovement::record(
+                null, // No product_id for bookkeeping-only
+                'in',
+                $request->quantity,
+                null,
+                $request->notes,
+                [
+                    'item_name' => $request->item_name,
+                    'supplier_id' => $request->supplier_id,
+                    'document_number' => $request->document_number,
+                    'unit_price' => $request->unit_price,
+                    'total_price' => $request->unit_price * $request->quantity,
+                ]
+            );
 
-        InventoryMovement::record(
-            $product,
-            'in',
-            $request->quantity,
-            $request->notes,
-            null, // reference_type
-            null, // reference_id
-            $request->supplier_id,
-            $request->document_number,
-            $request->unit_price,
-            $request->unit_price * $request->quantity
-        );
+            return redirect()->route('admin.inventory.movements.index')
+                ->with('success', 'Barang masuk berhasil dicatat (pencatatan saja).');
+        }
 
-        return redirect()->route('admin.inventory.movements.index')
-            ->with('success', 'Stok masuk berhasil dicatat.');
+        // Scenario 2 & 3: Display on web (new product or existing product)
+        if ($request->product_selection === 'new') {
+            // Scenario 2: Create new product for web
+            $request->validate([
+                'name' => 'required|string|max:255',
+                'description' => 'required|string',
+                'price' => 'required|numeric|min:0',
+                'category_id' => 'required|exists:categories,id',
+                'supplier_id' => 'required|exists:suppliers,id',
+                'quantity' => 'required|integer|min:1',
+                'unit_price' => 'required|numeric|min:0',
+                'document_number' => 'nullable|string|max:100',
+                'notes' => 'nullable|string'
+            ]);
+
+            // Create product with initial stock 0
+            $product = Product::create([
+                'name' => $request->name,
+                'slug' => \Illuminate\Support\Str::slug($request->name),
+                'description' => $request->description,
+                'price' => $request->price,
+                'stock' => 0,
+                'category_id' => $request->category_id,
+                'status' => 'active',
+            ]);
+
+            // Record movement (this will update stock)
+            InventoryMovement::record(
+                $product->id,
+                'in',
+                $request->quantity,
+                null,
+                $request->notes,
+                [
+                    'supplier_id' => $request->supplier_id,
+                    'document_number' => $request->document_number,
+                    'unit_price' => $request->unit_price,
+                    'total_price' => $request->unit_price * $request->quantity,
+                ]
+            );
+
+            // Update product stock
+            $product->increment('stock', $request->quantity);
+
+            return redirect()->route('admin.inventory.movements.index')
+                ->with('success', 'Produk baru berhasil dibuat dan stok masuk dicatat.');
+
+        } else {
+            // Scenario 3: Existing product
+            $request->validate([
+                'product_id' => 'required|exists:products,id',
+                'supplier_id' => 'required|exists:suppliers,id',
+                'quantity' => 'required|integer|min:1',
+                'unit_price' => 'required|numeric|min:0',
+                'document_number' => 'nullable|string|max:100',
+                'notes' => 'nullable|string'
+            ]);
+
+            $product = Product::findOrFail($request->product_id);
+
+            InventoryMovement::record(
+                $product->id,
+                'in',
+                $request->quantity,
+                null,
+                $request->notes,
+                [
+                    'supplier_id' => $request->supplier_id,
+                    'document_number' => $request->document_number,
+                    'unit_price' => $request->unit_price,
+                    'total_price' => $request->unit_price * $request->quantity,
+                ]
+            );
+
+            // Update product stock
+            $product->increment('stock', $request->quantity);
+
+            return redirect()->route('admin.inventory.movements.index')
+                ->with('success', 'Stok masuk berhasil dicatat.');
+        }
     }
 
     public function stockOutForm()
@@ -111,11 +196,11 @@ class InventoryMovementController extends Controller
         }
 
         InventoryMovement::record(
-            $product,
+            $product->id,
             'out',
             $request->quantity,
-            $request->notes,
-            $request->reference_type
+            null,
+            $request->notes
         );
 
         return redirect()->route('admin.inventory.movements.index')

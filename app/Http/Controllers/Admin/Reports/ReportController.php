@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Inventory\InventoryMovement;
 use App\Models\Credit\InstallmentPayment;
 use App\Models\Order;
-use App\Models\Product;
+use App\Models\Product\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -173,22 +173,175 @@ class ReportController extends Controller
     }
 
     /**
-     * Export inventory report (placeholder for future CSV/Excel export)
+     * Export inventory report to CSV
      */
     public function exportInventory(Request $request)
     {
-        // TODO: Implement CSV/Excel export
-        return redirect()->back()
-            ->with('info', 'Fitur export akan segera tersedia');
+        $query = InventoryMovement::with(['product', 'createdBy']);
+
+        // Apply same filters as inventory()
+        if ($request->has('type') && $request->type !== '') {
+            $query->where('type', $request->type);
+        }
+        if ($request->has('product_id') && $request->product_id !== '') {
+            $query->where('product_id', $request->product_id);
+        }
+        if ($request->has('start_date') && $request->start_date !== '') {
+            $query->whereDate('created_at', '>=', $request->start_date);
+        }
+        if ($request->has('end_date') && $request->end_date !== '') {
+            $query->whereDate('created_at', '<=', $request->end_date);
+        }
+
+        $movements = $query->orderBy('created_at', 'desc')->get();
+
+        $filename = 'inventory_report_' . now()->format('Y-m-d_His') . '.csv';
+
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => "attachment; filename=\"$filename\"",
+        ];
+
+        $callback = function () use ($movements) {
+            $file = fopen('php://output', 'w');
+
+            // UTF-8 BOM for Excel compatibility
+            fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
+
+            // Header row
+            fputcsv($file, [
+                'Tanggal',
+                'Produk',
+                'SKU',
+                'Tipe',
+                'Jumlah',
+                'Sumber',
+                'Referensi',
+                'Catatan',
+                'Dibuat Oleh'
+            ]);
+
+            // Data rows
+            foreach ($movements as $movement) {
+                fputcsv($file, [
+                    $movement->created_at->format('d/m/Y H:i'),
+                    $movement->product->name ?? '-',
+                    $movement->product->sku ?? '-',
+                    $movement->type === 'in' ? 'Masuk' : 'Keluar',
+                    $movement->quantity,
+                    $this->getSourceLabel($movement->source),
+                    $movement->reference_number ?? '-',
+                    $movement->notes ?? '-',
+                    $movement->createdBy->name ?? '-'
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 
     /**
-     * Export payment report (placeholder for future CSV/Excel export)
+     * Export payment report to CSV
      */
     public function exportPayments(Request $request)
     {
-        // TODO: Implement CSV/Excel export
-        return redirect()->back()
-            ->with('info', 'Fitur export akan segera tersedia');
+        $query = InstallmentPayment::with(['order.user']);
+
+        // Apply same filters as payments()
+        if ($request->has('status') && $request->status !== '') {
+            $query->where('status', $request->status);
+        }
+        if ($request->has('start_date') && $request->start_date !== '') {
+            $query->whereDate('paid_date', '>=', $request->start_date);
+        }
+        if ($request->has('end_date') && $request->end_date !== '') {
+            $query->whereDate('paid_date', '<=', $request->end_date);
+        }
+        if ($request->has('search') && $request->search !== '') {
+            $search = $request->search;
+            $query->whereHas('order', function ($q) use ($search) {
+                $q->where('order_number', 'like', "%{$search}%")
+                    ->orWhereHas('user', function ($uq) use ($search) {
+                        $uq->where('name', 'like', "%{$search}%");
+                    });
+            });
+        }
+
+        $payments = $query->orderBy('paid_date', 'desc')->get();
+
+        $filename = 'payment_report_' . now()->format('Y-m-d_His') . '.csv';
+
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => "attachment; filename=\"$filename\"",
+        ];
+
+        $callback = function () use ($payments) {
+            $file = fopen('php://output', 'w');
+
+            // UTF-8 BOM for Excel compatibility
+            fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
+
+            // Header row
+            fputcsv($file, [
+                'No. Order',
+                'Pelanggan',
+                'Cicilan Ke',
+                'Jatuh Tempo',
+                'Tanggal Bayar',
+                'Jumlah Tagihan',
+                'Jumlah Dibayar',
+                'Status'
+            ]);
+
+            // Data rows
+            foreach ($payments as $payment) {
+                fputcsv($file, [
+                    $payment->order->order_number ?? '-',
+                    $payment->order->user->name ?? '-',
+                    $payment->installment_number ?? '-',
+                    $payment->due_date ? $payment->due_date->format('d/m/Y') : '-',
+                    $payment->paid_date ? $payment->paid_date->format('d/m/Y') : '-',
+                    number_format($payment->amount_due, 0, ',', '.'),
+                    number_format($payment->amount_paid, 0, ',', '.'),
+                    $this->getPaymentStatusLabel($payment->status)
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+    /**
+     * Get human-readable source label
+     */
+    private function getSourceLabel($source)
+    {
+        $labels = [
+            'manual' => 'Manual',
+            'purchase' => 'Pembelian',
+            'adjustment' => 'Penyesuaian',
+            'order' => 'Pesanan',
+            'return' => 'Retur',
+        ];
+        return $labels[$source] ?? ucfirst($source);
+    }
+
+    /**
+     * Get human-readable payment status label
+     */
+    private function getPaymentStatusLabel($status)
+    {
+        $labels = [
+            'pending' => 'Menunggu',
+            'paid' => 'Lunas',
+            'overdue' => 'Terlambat',
+            'partial' => 'Sebagian',
+        ];
+        return $labels[$status] ?? ucfirst($status);
     }
 }

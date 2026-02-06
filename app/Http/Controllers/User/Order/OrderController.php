@@ -154,6 +154,8 @@ class OrderController extends Controller
             'district' => 'nullable|string|max:255',
             'postal_code' => 'required|string|max:10',
             'full_address' => 'required|string',
+            'latitude' => 'nullable|numeric',
+            'longitude' => 'nullable|numeric',
             // Shipping service validation
             'shipping_cost' => 'required|integer|min:0',
             'shipping_service' => 'required|string',
@@ -169,6 +171,14 @@ class OrderController extends Controller
         if ($cartItems->isEmpty()) {
             return redirect()->route('user.cart.index')
                 ->with('error', 'Tidak ada produk yang dipilih untuk checkout');
+        }
+
+        // Validate stock availability before proceeding
+        foreach ($cartItems as $cartItem) {
+            if ($cartItem->quantity > $cartItem->product->stock) {
+                return redirect()->route('user.cart.index')
+                    ->with('error', "Stok produk '{$cartItem->product->name}' tidak mencukupi. Tersedia: {$cartItem->product->stock}, di keranjang: {$cartItem->quantity}");
+            }
         }
 
         DB::beginTransaction();
@@ -187,6 +197,8 @@ class OrderController extends Controller
                 'district' => $validated['district'],
                 'postal_code' => $validated['postal_code'],
                 'full_address' => $validated['full_address'],
+                'latitude' => $validated['latitude'] ?? null,
+                'longitude' => $validated['longitude'] ?? null,
                 'is_default' => false,
             ]);
 

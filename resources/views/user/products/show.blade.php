@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', $product->name . ' - BUMDes Marketplace')
+@section('title', $product->name . ' - Amanah Shop')
 
 @section('content')
 <div class="bg-gray-50 min-h-screen py-6">
@@ -154,12 +154,6 @@
                             <span class="text-sm text-gray-600 w-32">Kategori:</span>
                             <span class="text-sm font-medium text-gray-900">{{ $product->category->name }}</span>
                         </div>
-                        @if($product->village)
-                        <div class="flex items-center">
-                            <span class="text-sm text-gray-600 w-32">Desa:</span>
-                            <span class="text-sm font-medium text-gray-900">{{ $product->village->name }}</span>
-                        </div>
-                        @endif
                         <div class="flex items-center">
                             <span class="text-sm text-gray-600 w-32">Stok:</span>
                             <span class="text-sm font-medium {{ $product->stock > 0 ? 'text-green-600' : 'text-red-600' }}">
@@ -176,7 +170,6 @@
                     @if($product->status === 'active' && $product->stock > 0)
                     <div class="mb-6">
                         @auth
-                            @if($product->village && $product->village->origin_city_id)
                             <form action="{{ route('user.cart.add') }}" method="POST">
                                 @csrf
                                 <input type="hidden" name="product_id" value="{{ $product->id }}">
@@ -206,11 +199,6 @@
                                     </button>
                                 </div>
                             </form>
-                            @else
-                            <div class="mb-6 p-4 bg-yellow-50 border-l-4 border-yellow-400 text-yellow-800 text-sm">
-                                Produk belum dapat dipesan. Lokasi pengiriman belum dikonfigurasi.
-                            </div>
-                            @endif
                         @else
                         <a href="{{ route('login') }}" class="block w-full bg-[#3BB77E] hover:bg-[#2a9d65] text-white px-8 py-3 rounded font-semibold transition-colors text-center mb-6">
                             Login to Purchase
@@ -313,12 +301,6 @@
                                 <td class="py-3 text-sm text-gray-600">Terjual</td>
                                 <td class="py-3 text-sm font-medium">{{ $sold }} units</td>
                             </tr>
-                            @if($product->village)
-                            <tr>
-                                <td class="py-3 text-sm text-gray-600">Lokasi</td>
-                                <td class="py-3 text-sm font-medium">{{ $product->village->name }}</td>
-                            </tr>
-                            @endif
                         </tbody>
                     </table>
                 </div>

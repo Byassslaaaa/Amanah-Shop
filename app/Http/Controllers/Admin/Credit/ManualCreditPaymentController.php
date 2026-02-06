@@ -57,7 +57,7 @@ class ManualCreditPaymentController extends Controller
 
     public function show(ManualCreditPayment $payment)
     {
-        $payment->load('manualCredit.installmentPlan');
+        $payment->load('manualCredit');
         return view('admin.credits.payments.show', compact('payment'));
     }
 

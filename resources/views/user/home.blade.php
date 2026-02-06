@@ -919,39 +919,6 @@
     </section>
     @endif
 
-    <!-- Newsletter Section -->
-    <section class="py-16 bg-gradient-to-r from-[#BCE3C9] via-[#9FD3B8] to-[#BCE3C9]">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center">
-                <h2 class="text-[32px] font-bold text-[#253D4E] mb-3">
-                    Dukung Ekonomi Lokal & Dapatkan Produk Berkualitas
-                </h2>
-                <p class="text-[16px] text-[#7E7E7E] mb-8">
-                    Berlangganan newsletter untuk info produk terbaru dari Amanah Shop - Toko Kebutuhan Rumah Tangga & Lifestyle
-                </p>
-
-                <form action="#" method="POST" class="max-w-xl mx-auto">
-                    @csrf
-                    <div class="flex flex-col sm:flex-row gap-3">
-                        <input
-                            type="email"
-                            name="email"
-                            placeholder="Masukkan email Anda"
-                            required
-                            class="flex-1 px-6 py-4 rounded-full border-2 border-white bg-white text-[#253D4E] placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#3BB77E] focus:border-transparent"
-                        >
-                        <button
-                            type="submit"
-                            class="px-8 py-4 bg-[#3BB77E] hover:bg-[#2a9d66] text-white font-bold rounded-full transition-all duration-300 shadow-lg hover:shadow-xl whitespace-nowrap"
-                        >
-                            Berlangganan
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </section>
-
     @push('scripts')
     <script>
         function countdownTimer() {

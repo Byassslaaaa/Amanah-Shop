@@ -39,8 +39,13 @@
                             <p class="text-base text-gray-900">{{ $movement->created_at->format('d M Y, H:i') }}</p>
                         </div>
                         <div>
-                            <p class="text-sm text-gray-600 mb-1">Produk</p>
-                            <p class="text-base text-gray-900 font-medium">{{ $movement->product->name }}</p>
+                            <p class="text-sm text-gray-600 mb-1">{{ $movement->isWebProduct() ? 'Produk' : 'Nama Barang' }}</p>
+                            <p class="text-base text-gray-900 font-medium">
+                                {{ $movement->display_name }}
+                                @if($movement->isBookkeepingOnly())
+                                    <span class="ml-2 px-2 py-0.5 text-xs bg-gray-100 text-gray-600 rounded">Pencatatan saja</span>
+                                @endif
+                            </p>
                         </div>
                     </div>
 

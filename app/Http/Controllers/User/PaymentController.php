@@ -67,12 +67,20 @@ class PaymentController extends Controller
                 'notification' => $notification,
             ]);
 
-            // Find order by order number
-            $order = Order::where('order_number', $notification['order_number'])->first();
+            // Find order by order number (handle -DP suffix for down payment)
+            $orderNumber = $notification['order_number'];
+
+            // Remove -DP suffix if present (for down payment transactions)
+            if (str_ends_with($orderNumber, '-DP')) {
+                $orderNumber = substr($orderNumber, 0, -3);
+            }
+
+            $order = Order::where('order_number', $orderNumber)->first();
 
             if (!$order) {
                 \Log::error('Order not found for notification', [
-                    'order_number' => $notification['order_number'],
+                    'original_order_number' => $notification['order_number'],
+                    'normalized_order_number' => $orderNumber,
                 ]);
                 return response()->json(['message' => 'Order not found'], 404);
             }
@@ -136,6 +144,12 @@ class PaymentController extends Controller
     public function finish(Request $request)
     {
         $orderNumber = $request->order_id;
+
+        // Remove -DP suffix if present (for down payment transactions)
+        if (str_ends_with($orderNumber, '-DP')) {
+            $orderNumber = substr($orderNumber, 0, -3);
+        }
+
         $order = Order::where('order_number', $orderNumber)->first();
 
         if (!$order) {

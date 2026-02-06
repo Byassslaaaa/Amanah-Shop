@@ -104,7 +104,7 @@ class OrderController extends Controller
     public function updatePaymentStatus(Request $request, Order $order)
     {
         $request->validate([
-            'payment_status' => 'required|in:unpaid,pending,paid,failed',
+            'payment_status' => 'required|in:unpaid,pending,paid,failed,expired,cancelled,refunded,installment_active,installment_overdue,installment_completed',
         ]);
 
         $oldPaymentStatus = $order->payment_status;

@@ -8,7 +8,7 @@
     <div class="flex items-center justify-between mb-6">
         <div>
             <h1 class="text-2xl font-bold text-gray-900">Kelola Produk</h1>
-            <p class="text-sm text-gray-600 mt-1">Kelola semua produk di marketplace</p>
+            <p class="text-sm text-gray-600 mt-1">Kelola semua produk di toko</p>
         </div>
         <a href="{{ route('admin.products.create') }}"
             class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors">
@@ -177,7 +177,7 @@
                     d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
             </svg>
             <h3 class="text-lg font-semibold text-gray-900 mb-2">Belum Ada Produk</h3>
-            <p class="text-sm text-gray-600 mb-6">Belum ada produk yang tersedia. Mulai tambahkan produk untuk marketplace Anda.</p>
+            <p class="text-sm text-gray-600 mb-6">Belum ada produk yang tersedia. Mulai tambahkan produk untuk toko Anda.</p>
             <a href="{{ route('admin.products.create') }}"
                 class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors">
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
