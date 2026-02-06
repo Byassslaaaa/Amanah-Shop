@@ -11,13 +11,13 @@ class ContactController extends Controller
     public function index()
     {
         // Get WhatsApp number from settings
-        $whatsappNumber = Setting::get('partner_whatsapp');
+        $whatsappNumber = Setting::get('admin_whatsapp');
 
         // Format WhatsApp URL
         $whatsappUrl = null;
         if ($whatsappNumber) {
             $formattedNumber = WhatsappHelper::formatPhoneNumber($whatsappNumber);
-            $message = "Halo Admin, saya tertarik untuk bergabung menjadi mitra. Mohon informasi lebih lanjut mengenai cara pendaftaran dan persyaratannya.";
+            $message = "Halo Amanah Shop, saya ingin bertanya mengenai produk/pesanan saya.";
             $whatsappUrl = "https://wa.me/{$formattedNumber}?text=" . urlencode($message);
         }
 

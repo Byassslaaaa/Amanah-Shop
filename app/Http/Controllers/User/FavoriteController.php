@@ -21,7 +21,7 @@ class FavoriteController extends Controller
     public function index()
     {
         $favorites = Auth::user()->favorites()
-            ->with(['product.category', 'product.village'])
+            ->with(['product.category'])
             ->latest()
             ->paginate(12);
 

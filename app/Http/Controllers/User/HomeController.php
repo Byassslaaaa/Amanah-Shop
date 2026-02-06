@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Models\AboutContent;
 use App\Models\Banner;
 use App\Models\Product\Category;
 use App\Models\Product\Product;
@@ -161,9 +162,7 @@ class HomeController extends Controller
 
     public function about()
     {
-        // TODO: Implement AboutContent model and fetch from database
-        // For now, using static content from the view
-        $aboutContent = null;
+        $aboutContent = AboutContent::getActive();
 
         return view('user.about', compact('aboutContent'));
     }

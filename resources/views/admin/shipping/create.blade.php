@@ -212,7 +212,7 @@
                                     <ul class="list-disc ml-5 space-y-1">
                                         <li>Fitur ini akan membuat shipment baru di Biteship</li>
                                         <li>Biaya shipment akan dipotong dari saldo Biteship Anda</li>
-                                        <li>Pastikan data desa (koordinat, alamat) sudah benar</li>
+                                        <li>Pastikan data toko (koordinat, alamat) sudah benar di .env</li>
                                         <li>Untuk testing, gunakan mode "Input Resi Manual"</li>
                                     </ul>
                                 </div>

@@ -30,24 +30,24 @@ class TestEmailCommand extends Command
         $this->info('Testing email configuration...');
         
         try {
-            // Get village head email
-            $villageHeadEmail = Setting::get('village_head_email');
-            $this->info("Village head email: {$villageHeadEmail}");
-            
-            if (!$villageHeadEmail) {
-                $this->error('Village head email not set in settings!');
+            // Get admin email
+            $adminEmail = Setting::get('admin_email');
+            $this->info("Admin email: {$adminEmail}");
+
+            if (!$adminEmail) {
+                $this->error('Admin email not set in settings!');
                 return;
             }
-            
+
             // Send test email
             Mail::send('emails.contact', [
                 'name' => 'Test User',
                 'email' => 'test@example.com',
                 'subject' => 'Test Email',
                 'messageContent' => 'This is a test message from the contact form.',
-            ], function ($mail) use ($villageHeadEmail) {
-                $mail->to($villageHeadEmail)
-                     ->subject('Test: Pesan Kontak Website Desa')
+            ], function ($mail) use ($adminEmail) {
+                $mail->to($adminEmail)
+                     ->subject('Test: Pesan Kontak Amanah Shop')
                      ->from(config('mail.from.address'), 'Test User')
                      ->replyTo('test@example.com', 'Test User');
             });

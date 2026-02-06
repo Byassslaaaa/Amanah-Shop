@@ -13,6 +13,7 @@ class InventoryMovement extends Model
 
     protected $fillable = [
         'product_id',
+        'item_name',
         'supplier_id',
         'type',
         'quantity',
@@ -98,31 +99,40 @@ class InventoryMovement extends Model
     /**
      * Static method: Record a new inventory movement
      *
-     * @param int $productId
+     * @param int|null $productId - Product ID (null for bookkeeping-only items)
      * @param string $type ('in' or 'out')
      * @param int $quantity
      * @param mixed $reference (model instance that triggered this movement, e.g., Order)
      * @param string|null $notes
-     * @param array $additionalData (supplier_id, document_number, unit_price, etc)
+     * @param array $additionalData (supplier_id, document_number, unit_price, item_name, etc)
      * @return InventoryMovement
      */
     public static function record($productId, $type, $quantity, $reference = null, $notes = null, $additionalData = [])
     {
-        $product = Product::findOrFail($productId);
+        // If product_id is provided, get stock levels
+        if ($productId) {
+            $product = Product::findOrFail($productId);
+            $stockBefore = $product->stock;
+            $stockAfter = $product->stock + ($type === 'in' ? $quantity : -$quantity);
+        } else {
+            // Bookkeeping-only item (no product_id)
+            $stockBefore = 0;
+            $stockAfter = 0;
+        }
 
         $data = [
             'product_id' => $productId,
             'type' => $type,
             'quantity' => abs($quantity),
-            'stock_before' => $product->stock,
-            'stock_after' => $product->stock + ($type === 'in' ? $quantity : -$quantity),
+            'stock_before' => $stockBefore,
+            'stock_after' => $stockAfter,
             'reference_type' => $reference ? get_class($reference) : null,
             'reference_id' => $reference ? $reference->id : null,
             'notes' => $notes,
             'created_by' => auth()->id(),
         ];
 
-        // Merge additional data (supplier_id, document_number, unit_price, total_price)
+        // Merge additional data (supplier_id, document_number, unit_price, total_price, item_name)
         if (!empty($additionalData)) {
             $data = array_merge($data, $additionalData);
         }
@@ -164,5 +174,32 @@ class InventoryMovement extends Model
     public function getTypeColor()
     {
         return $this->type === 'in' ? 'green' : 'red';
+    }
+
+    /**
+     * Get display name (product name or item_name)
+     */
+    public function getDisplayNameAttribute()
+    {
+        if ($this->product) {
+            return $this->product->name;
+        }
+        return $this->item_name ?? 'Item tidak diketahui';
+    }
+
+    /**
+     * Check if this is a web product or bookkeeping-only item
+     */
+    public function isWebProduct()
+    {
+        return $this->product_id !== null;
+    }
+
+    /**
+     * Check if this is a bookkeeping-only item
+     */
+    public function isBookkeepingOnly()
+    {
+        return $this->product_id === null;
     }
 }

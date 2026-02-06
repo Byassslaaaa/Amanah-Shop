@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Profile - BUMDes Marketplace')
+@section('title', 'Profile - Amanah Shop')
 
 @section('content')
 <div class="bg-gray-50 min-h-screen py-8">

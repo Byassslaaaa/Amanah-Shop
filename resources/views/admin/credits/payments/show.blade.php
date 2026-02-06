@@ -11,7 +11,7 @@
             <svg class="w-4 h-4 mx-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
             </svg>
-            <a href="{{ route('admin.credit-payments.index') }}" class="hover:text-gray-900">Pembayaran Kredit</a>
+            <a href="{{ route('admin.credits.payments.index') }}" class="hover:text-gray-900">Pembayaran Kredit</a>
             <svg class="w-4 h-4 mx-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
             </svg>
@@ -77,19 +77,11 @@
                     </div>
                     @endif
 
-                    @if($payment->payment_date)
+                    @if($payment->paid_date)
                     <div class="pt-4 border-t border-gray-100">
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <p class="text-sm text-gray-600 mb-1">Tanggal Bayar</p>
-                                <p class="text-base text-gray-900">{{ $payment->payment_date->format('d M Y') }}</p>
-                            </div>
-                            @if($payment->payment_method)
-                            <div>
-                                <p class="text-sm text-gray-600 mb-1">Metode</p>
-                                <p class="text-base text-gray-900 capitalize">{{ $payment->payment_method }}</p>
-                            </div>
-                            @endif
+                        <div>
+                            <p class="text-sm text-gray-600 mb-1">Tanggal Bayar</p>
+                            <p class="text-base text-gray-900">{{ $payment->paid_date->format('d M Y') }}</p>
                         </div>
                     </div>
                     @endif
@@ -111,7 +103,7 @@
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <p class="text-sm text-gray-600 mb-1">No. Kredit</p>
-                            <a href="{{ route('admin.credits.show', $payment->manualCredit) }}" class="text-base font-medium text-blue-600 hover:text-blue-900">
+                            <a href="{{ route('admin.credits.manual.show', $payment->manualCredit) }}" class="text-base font-medium text-blue-600 hover:text-blue-900">
                                 {{ $payment->manualCredit->credit_number }}
                             </a>
                         </div>
@@ -121,11 +113,14 @@
                                 @case('active')
                                     <span class="px-2 py-1 text-xs font-semibold bg-blue-100 text-blue-800 rounded-full">Aktif</span>
                                     @break
-                                @case('paid_off')
-                                    <span class="px-2 py-1 text-xs font-semibold bg-green-100 text-green-800 rounded-full">Lunas</span>
+                                @case('completed')
+                                    <span class="px-2 py-1 text-xs font-semibold bg-green-100 text-green-800 rounded-full">Selesai</span>
                                     @break
                                 @case('overdue')
                                     <span class="px-2 py-1 text-xs font-semibold bg-red-100 text-red-800 rounded-full">Jatuh Tempo</span>
+                                    @break
+                                @case('cancelled')
+                                    <span class="px-2 py-1 text-xs font-semibold bg-gray-100 text-gray-800 rounded-full">Dibatalkan</span>
                                     @break
                             @endswitch
                         </div>
@@ -154,7 +149,7 @@
             <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
                 <h3 class="text-base font-semibold text-gray-900 mb-4">Aksi</h3>
                 <div class="space-y-2">
-                    <a href="{{ route('admin.credits.record-payment', $payment->manualCredit) }}"
+                    <a href="{{ route('admin.credits.manual.payment-form', $payment->manualCredit) }}"
                        class="block w-full px-4 py-2 text-sm text-center font-medium text-white bg-green-600 hover:bg-green-700 rounded-lg transition-colors">
                         Catat Pembayaran
                     </a>
@@ -172,7 +167,7 @@
                     </div>
                     <div class="flex justify-between">
                         <span class="text-gray-600">Sudah Dibayar</span>
-                        <span class="text-green-600">Rp{{ number_format($payment->manualCredit->amount_paid, 0, ',', '.') }}</span>
+                        <span class="text-green-600">Rp{{ number_format($payment->manualCredit->total_paid, 0, ',', '.') }}</span>
                     </div>
                     <div class="flex justify-between pt-2 border-t border-gray-100">
                         <span class="text-gray-900 font-medium">Sisa Hutang</span>
@@ -184,10 +179,10 @@
                 <div class="mt-4">
                     <div class="flex justify-between text-xs text-gray-600 mb-1">
                         <span>Progress</span>
-                        <span>{{ $payment->manualCredit->total_amount > 0 ? round(($payment->manualCredit->amount_paid / $payment->manualCredit->total_amount) * 100) : 0 }}%</span>
+                        <span>{{ $payment->manualCredit->total_amount > 0 ? round(($payment->manualCredit->total_paid / $payment->manualCredit->total_amount) * 100) : 0 }}%</span>
                     </div>
                     <div class="w-full bg-gray-100 rounded-full h-2">
-                        <div class="bg-green-500 h-2 rounded-full" style="width: {{ $payment->manualCredit->total_amount > 0 ? ($payment->manualCredit->amount_paid / $payment->manualCredit->total_amount * 100) : 0 }}%"></div>
+                        <div class="bg-green-500 h-2 rounded-full" style="width: {{ $payment->manualCredit->total_amount > 0 ? ($payment->manualCredit->total_paid / $payment->manualCredit->total_amount * 100) : 0 }}%"></div>
                     </div>
                 </div>
             </div>

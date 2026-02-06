@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Kategori: ' . $category->name . ' - BUMDes Marketplace')
+@section('title', 'Kategori: ' . $category->name . ' - Amanah Shop')
 
 @section('content')
     <div class="bg-gray-50 min-h-screen">

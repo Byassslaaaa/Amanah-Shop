@@ -19,14 +19,15 @@ return new class extends Migration
             $table->text('customer_address')->nullable();
             $table->text('description'); // Keterangan pinjaman untuk apa
 
-            $table->foreignId('installment_plan_id')->constrained()->onDelete('restrict');
+            // Loan details
             $table->decimal('loan_amount', 12, 2); // Jumlah pinjaman
-            $table->decimal('down_payment', 12, 2)->default(0);
-            $table->decimal('principal_amount', 12, 2);
-            $table->decimal('interest_amount', 12, 2);
+            $table->decimal('down_payment', 12, 2)->default(0); // DP/Uang muka
+            $table->decimal('principal_amount', 12, 2); // Pokok (loan - dp)
+            $table->decimal('interest_rate', 5, 2)->default(0); // % bunga per tahun
+            $table->decimal('interest_amount', 12, 2)->default(0); // Total bunga
             $table->decimal('total_amount', 12, 2); // Total yang harus dibayar
-            $table->decimal('monthly_installment', 12, 2);
-            $table->integer('installment_months');
+            $table->integer('installment_months'); // Lama cicilan (bulan)
+            $table->decimal('monthly_installment', 12, 2); // Cicilan per bulan
 
             $table->decimal('total_paid', 12, 2)->default(0);
             $table->decimal('remaining_balance', 12, 2);

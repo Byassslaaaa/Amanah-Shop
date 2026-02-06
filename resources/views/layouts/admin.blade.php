@@ -141,9 +141,9 @@
                                 </svg>
                             </button>
                             <div x-show="open && !sidebarCollapsed" x-cloak class="ml-8 mt-1 space-y-1">
-                                <a href="{{ route('admin.credits.manual.index') }}" class="block px-3 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg {{ request()->routeIs('admin.credits.manual.*') ? 'text-blue-600 bg-blue-50' : '' }}">Daftar Kredit</a>
-                                <a href="{{ route('admin.credits.payments.index') }}" class="block px-3 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg {{ request()->routeIs('admin.credits.payments.*') ? 'text-blue-600 bg-blue-50' : '' }}">Pembayaran Kredit</a>
-                                <a href="{{ route('admin.credits.payments.report') }}" class="block px-3 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg {{ request()->routeIs('admin.credits.payments.report') ? 'text-blue-600 bg-blue-50' : '' }}">Laporan Kredit</a>
+                                <a href="{{ route('admin.credits.manual.index') }}" class="block px-3 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg {{ request()->routeIs('admin.credits.manual.*') ? 'text-blue-600 bg-blue-50' : '' }}">Kelola Kredit</a>
+                                <a href="{{ route('admin.credits.payments.index') }}" class="block px-3 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg {{ request()->routeIs('admin.credits.payments.*') && !request()->routeIs('admin.credits.payments.report') ? 'text-blue-600 bg-blue-50' : '' }}">Data Pembayaran</a>
+                                <a href="{{ route('admin.credits.payments.report') }}" class="block px-3 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg {{ request()->routeIs('admin.credits.payments.report') ? 'text-blue-600 bg-blue-50' : '' }}">Laporan</a>
                             </div>
                         </div>
 
@@ -163,13 +163,20 @@
                             <span x-show="!sidebarCollapsed" x-cloak>Manage User</span>
                         </a>
 
-                        <!-- Settings -->
+                        <!-- Banner Settings -->
                         <a href="{{ route('admin.banners.index') }}" class="flex items-center px-3 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition-colors {{ request()->routeIs('admin.banners.*') ? 'bg-gray-100' : '' }}" :class="{ 'justify-center': sidebarCollapsed }">
                             <svg class="w-5 h-5 flex-shrink-0" :class="{ 'mr-3': !sidebarCollapsed }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                             </svg>
-                            <span x-show="!sidebarCollapsed" x-cloak>Settings</span>
+                            <span x-show="!sidebarCollapsed" x-cloak>Banner</span>
+                        </a>
+
+                        <!-- About Page -->
+                        <a href="{{ route('admin.about.index') }}" class="flex items-center px-3 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition-colors {{ request()->routeIs('admin.about.*') ? 'bg-gray-100' : '' }}" :class="{ 'justify-center': sidebarCollapsed }">
+                            <svg class="w-5 h-5 flex-shrink-0" :class="{ 'mr-3': !sidebarCollapsed }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span x-show="!sidebarCollapsed" x-cloak>Halaman About</span>
                         </a>
                     @endif
                 </nav>
@@ -310,13 +317,20 @@
                             Manage User
                         </a>
 
-                        <!-- Settings -->
+                        <!-- Banner -->
                         <a href="{{ route('admin.banners.index') }}" class="flex items-center px-3 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition-colors {{ request()->routeIs('admin.banners.*') ? 'bg-gray-100' : '' }}">
                             <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                             </svg>
-                            Settings
+                            Banner
+                        </a>
+
+                        <!-- About Page -->
+                        <a href="{{ route('admin.about.index') }}" class="flex items-center px-3 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition-colors {{ request()->routeIs('admin.about.*') ? 'bg-gray-100' : '' }}">
+                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            Halaman About
                         </a>
                     @endif
                 </nav>

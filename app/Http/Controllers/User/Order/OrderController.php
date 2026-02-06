@@ -154,6 +154,8 @@ class OrderController extends Controller
             'district' => 'nullable|string|max:255',
             'postal_code' => 'required|string|max:10',
             'full_address' => 'required|string',
+            'latitude' => 'nullable|numeric',
+            'longitude' => 'nullable|numeric',
             // Shipping service validation
             'shipping_cost' => 'required|integer|min:0',
             'shipping_service' => 'required|string',
@@ -171,9 +173,22 @@ class OrderController extends Controller
                 ->with('error', 'Tidak ada produk yang dipilih untuk checkout');
         }
 
+        // ⚠️ START TRANSACTION EARLY to prevent race conditions
         DB::beginTransaction();
 
         try {
+            // ⚠️ CRITICAL: Validate stock WITH PESSIMISTIC LOCK to prevent race condition
+            // Lock products for update to ensure no other transaction can modify stock
+            foreach ($cartItems as $cartItem) {
+                $product = \App\Models\Product\Product::lockForUpdate()
+                    ->find($cartItem->product_id);
+
+                if ($cartItem->quantity > $product->stock) {
+                    DB::rollBack();
+                    return redirect()->route('user.cart.index')
+                        ->with('error', "Stok produk '{$product->name}' tidak mencukupi. Tersedia: {$product->stock}, di keranjang: {$cartItem->quantity}");
+                }
+            }
             // Create shipping address
             $shippingAddress = ShippingAddress::create([
                 'user_id' => auth()->id(),
@@ -187,6 +202,8 @@ class OrderController extends Controller
                 'district' => $validated['district'],
                 'postal_code' => $validated['postal_code'],
                 'full_address' => $validated['full_address'],
+                'latitude' => $validated['latitude'] ?? null,
+                'longitude' => $validated['longitude'] ?? null,
                 'is_default' => false,
             ]);
 
@@ -240,19 +257,24 @@ class OrderController extends Controller
 
             // Create order items and track inventory
             foreach ($cartItems as $cartItem) {
+                // ⚠️ CRITICAL: Lock product again to ensure atomicity
+                $product = \App\Models\Product\Product::lockForUpdate()
+                    ->find($cartItem->product_id);
+
                 OrderItem::create([
                     'order_id' => $order->id,
                     'product_id' => $cartItem->product_id,
-                    'product_name' => $cartItem->product->name,
-                    'price' => $cartItem->product->price,
+                    'product_name' => $product->name,
+                    'price' => $product->price,
                     'quantity' => $cartItem->quantity,
-                    'subtotal' => $cartItem->quantity * $cartItem->product->price,
+                    'subtotal' => $cartItem->quantity * $product->price,
                 ]);
 
-                // Reduce stock
-                $cartItem->product->decrement('stock', $cartItem->quantity);
+                // ⚠️ ATOMIC: Reduce stock with pessimistic lock
+                // This ensures no race condition between check and decrement
+                $product->decrement('stock', $cartItem->quantity);
 
-                // Record inventory movement
+                // Record inventory movement - if this fails, transaction will rollback
                 \App\Models\Inventory\InventoryMovement::record(
                     $cartItem->product_id,
                     'out',
@@ -320,6 +342,83 @@ class OrderController extends Controller
         }
     }
 
+
+    /**
+     * Cancel order (customer self-service)
+     */
+    public function cancel(Request $request, Order $order)
+    {
+        // Pastikan order milik user yang login
+        if ($order->user_id !== auth()->id()) {
+            abort(403, 'Anda tidak memiliki akses ke order ini');
+        }
+
+        // Validasi: hanya order pending yang bisa dicancel
+        if ($order->status !== 'pending') {
+            return redirect()->back()
+                ->with('error', 'Order tidak dapat dibatalkan. Hanya order dengan status "Menunggu Pembayaran" yang dapat dibatalkan.');
+        }
+
+        // Validasi: tidak boleh cancel jika sudah paid
+        if ($order->payment_status === 'paid') {
+            return redirect()->back()
+                ->with('error', 'Order tidak dapat dibatalkan karena pembayaran sudah diterima. Silakan hubungi admin untuk refund.');
+        }
+
+        $validated = $request->validate([
+            'cancellation_reason' => 'required|string|max:500',
+        ], [
+            'cancellation_reason.required' => 'Alasan pembatalan harus diisi.',
+            'cancellation_reason.max' => 'Alasan pembatalan maksimal 500 karakter.',
+        ]);
+
+        DB::beginTransaction();
+
+        try {
+            // 1. Restore stock untuk setiap item
+            foreach ($order->items as $item) {
+                $product = \App\Models\Product\Product::lockForUpdate()
+                    ->find($item->product_id);
+
+                if ($product) {
+                    // Kembalikan stock
+                    $product->increment('stock', $item->quantity);
+
+                    // Reverse inventory movement
+                    \App\Models\Inventory\InventoryMovement::record(
+                        $item->product_id,
+                        'in',
+                        $item->quantity,
+                        $order,
+                        "Pembatalan order #{$order->order_number} - {$validated['cancellation_reason']}"
+                    );
+                }
+            }
+
+            // 2. Update order status
+            $order->update([
+                'status' => 'cancelled',
+                'payment_status' => 'cancelled',
+                'cancelled_at' => now(),
+                'cancellation_reason' => $validated['cancellation_reason'],
+            ]);
+
+            DB::commit();
+
+            return redirect()->route('user.orders.show', $order)
+                ->with('success', 'Order berhasil dibatalkan. Stok produk telah dikembalikan.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error cancelling order', [
+                'order_id' => $order->id,
+                'error' => $e->getMessage(),
+            ]);
+
+            return redirect()->back()
+                ->with('error', 'Gagal membatalkan order: ' . $e->getMessage());
+        }
+    }
 
     /**
      * Generate unique order number

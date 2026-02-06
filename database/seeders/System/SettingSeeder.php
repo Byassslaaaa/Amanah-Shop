@@ -15,14 +15,14 @@ class SettingSeeder extends Seeder
     {
         $settings = [
             [
-                'key' => 'village_head_email',
-                'value' => 'kepala.desa@example.com',
-                'description' => 'Email Kepala Desa untuk menerima pesan kontak'
+                'key' => 'admin_email',
+                'value' => 'admin@amanah.shop',
+                'description' => 'Email Admin untuk menerima pesan kontak'
             ],
             [
-                'key' => 'partner_whatsapp',
+                'key' => 'admin_whatsapp',
                 'value' => '081234567890',
-                'description' => 'Nomor WhatsApp Admin untuk pendaftaran mitra'
+                'description' => 'Nomor WhatsApp Admin untuk layanan pelanggan'
             ],
             // SMTP Email Configuration
             [
@@ -52,8 +52,24 @@ class SettingSeeder extends Seeder
             ],
             [
                 'key' => 'mail_from_name',
-                'value' => 'Website Desa',
+                'value' => 'Amanah Shop',
                 'description' => 'Nama pengirim email'
+            ],
+            // Shipping Origin Coordinates (for Biteship)
+            [
+                'key' => 'shipping_origin_latitude',
+                'value' => '-6.200000',
+                'description' => 'Latitude koordinat toko (untuk perhitungan ongkir)'
+            ],
+            [
+                'key' => 'shipping_origin_longitude',
+                'value' => '106.816666',
+                'description' => 'Longitude koordinat toko (untuk perhitungan ongkir)'
+            ],
+            [
+                'key' => 'shipping_origin_address',
+                'value' => 'Jakarta, Indonesia',
+                'description' => 'Alamat toko (untuk tampilan)'
             ],
         ];
 

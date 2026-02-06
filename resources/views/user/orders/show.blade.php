@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Detail Pesanan - BUMDes Marketplace')
+@section('title', 'Detail Pesanan - Amanah Shop')
 
 @section('content')
 <div class="bg-gray-50 min-h-screen py-8">
@@ -137,15 +137,6 @@
                                     <!-- Product Info -->
                                     <div class="flex-1">
                                         <h3 class="font-semibold text-gray-900 mb-1">{{ $item->product_name }}</h3>
-                                        <p class="text-sm text-gray-500 mb-2">
-                                            <span class="inline-flex items-center gap-1">
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                                </svg>
-                                                {{ $item->village->name }}
-                                            </span>
-                                        </p>
                                         <div class="flex items-center gap-4 text-sm">
                                             <span class="text-gray-600">{{ $item->quantity }}x</span>
                                             <span class="font-bold text-green-600">
@@ -237,6 +228,19 @@
                                 Pembayaran aman dengan Midtrans
                             </p>
                         </div>
+
+                        @if($order->status === 'pending')
+                            <!-- Cancel Order Button -->
+                            <div class="mb-4">
+                                <button onclick="showCancelModal()"
+                                        class="w-full block text-center bg-red-100 text-red-700 py-3 px-4 rounded-lg font-semibold hover:bg-red-200 transition-colors border-2 border-red-300">
+                                    ❌ Batalkan Pesanan
+                                </button>
+                                <p class="text-xs text-gray-500 text-center mt-2">
+                                    Stok produk akan dikembalikan
+                                </p>
+                            </div>
+                        @endif
                     @elseif($order->payment_status === 'paid')
                         <div class="p-4 bg-green-50 rounded-lg border-2 border-green-300 mb-4">
                             <div class="flex items-center justify-center mb-2">
@@ -297,4 +301,85 @@
         </div>
     </div>
 </div>
+
+<!-- Cancel Order Modal -->
+<div id="cancelModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-lg bg-white">
+        <div class="mt-3">
+            <div class="flex items-center justify-center w-12 h-12 mx-auto bg-red-100 rounded-full">
+                <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                </svg>
+            </div>
+            <h3 class="text-lg font-medium text-gray-900 text-center mt-4">Batalkan Pesanan?</h3>
+            <form id="cancelForm" method="POST" action="{{ route('user.orders.cancel', $order) }}" class="mt-4">
+                @csrf
+                <div class="mb-4">
+                    <label for="cancellation_reason" class="block text-sm font-medium text-gray-700 mb-2">
+                        Alasan Pembatalan <span class="text-red-500">*</span>
+                    </label>
+                    <textarea
+                        id="cancellation_reason"
+                        name="cancellation_reason"
+                        rows="3"
+                        required
+                        maxlength="500"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                        placeholder="Contoh: Salah pilih produk, Ingin ubah alamat pengiriman, dll."></textarea>
+                    <p class="text-xs text-gray-500 mt-1">Maksimal 500 karakter</p>
+                </div>
+                <div class="bg-yellow-50 border-l-4 border-yellow-400 p-3 mb-4">
+                    <p class="text-xs text-yellow-800">
+                        ⚠️ Dengan membatalkan pesanan ini:
+                    </p>
+                    <ul class="text-xs text-yellow-700 mt-2 ml-4 list-disc">
+                        <li>Stok produk akan dikembalikan</li>
+                        <li>Pesanan tidak dapat diaktifkan kembali</li>
+                    </ul>
+                </div>
+                <div class="flex gap-3">
+                    <button
+                        type="button"
+                        onclick="hideCancelModal()"
+                        class="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 font-medium">
+                        Batal
+                    </button>
+                    <button
+                        type="submit"
+                        class="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium">
+                        Ya, Batalkan
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@push('scripts')
+<script>
+function showCancelModal() {
+    document.getElementById('cancelModal').classList.remove('hidden');
+}
+
+function hideCancelModal() {
+    document.getElementById('cancelModal').classList.add('hidden');
+    document.getElementById('cancellation_reason').value = '';
+}
+
+// Close modal when clicking outside
+document.getElementById('cancelModal')?.addEventListener('click', function(e) {
+    if (e.target === this) {
+        hideCancelModal();
+    }
+});
+
+// Close modal on Escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        hideCancelModal();
+    }
+});
+</script>
+@endpush
+
 @endsection

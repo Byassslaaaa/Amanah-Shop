@@ -104,7 +104,10 @@
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 text-sm text-gray-900">
-                                    {{ $movement->product->name }}
+                                    {{ $movement->display_name }}
+                                    @if($movement->isBookkeepingOnly())
+                                        <span class="ml-2 px-2 py-0.5 text-xs bg-gray-100 text-gray-600 rounded">Pencatatan</span>
+                                    @endif
                                 </td>
                                 <td class="px-6 py-4 text-sm text-gray-600">
                                     {{ $movement->supplier ? $movement->supplier->name : '-' }}

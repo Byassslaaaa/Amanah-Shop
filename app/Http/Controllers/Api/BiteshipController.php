@@ -45,12 +45,9 @@ class BiteshipController extends Controller
     {
         try {
             $validated = $request->validate([
-                'origin_latitude' => 'required|numeric',
-                'origin_longitude' => 'required|numeric',
                 'destination_latitude' => 'required|numeric',
                 'destination_longitude' => 'required|numeric',
                 'destination_postal_code' => 'nullable|string',
-                'origin_postal_code' => 'nullable|string',
                 'couriers' => 'nullable|string',
                 'items' => 'required|array',
                 'items.*.name' => 'required|string',
@@ -58,6 +55,14 @@ class BiteshipController extends Controller
                 'items.*.weight' => 'required|numeric',
                 'items.*.quantity' => 'required|integer|min:1',
             ]);
+
+            // Get shop origin coordinates from database settings
+            $originLatitude = \App\Models\System\Setting::get('shipping_origin_latitude', config('biteship.shop_origin.latitude'));
+            $originLongitude = \App\Models\System\Setting::get('shipping_origin_longitude', config('biteship.shop_origin.longitude'));
+
+            // Add origin coordinates to params
+            $validated['origin_latitude'] = $originLatitude;
+            $validated['origin_longitude'] = $originLongitude;
 
             $result = $this->biteshipService->getShippingRates($validated);
 

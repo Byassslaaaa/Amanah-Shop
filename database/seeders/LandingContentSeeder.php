@@ -26,25 +26,25 @@ class LandingContentSeeder extends Seeder
         $contents = [
             [
                 'key' => 'hero',
-                'title' => 'Selamat Datang di BUMDes Marketplace',
-                'content' => 'Temukan dan beli produk lokal berkualitas langsung dari desa. Dukung ekonomi desa dan nikmati produk segar dari petani dan pengrajin lokal.',
+                'title' => 'Selamat Datang di Amanah Shop',
+                'content' => 'Temukan dan beli produk berkualitas untuk kebutuhan rumah tangga Anda. Perabotan, pakaian, dan perlengkapan rumah dengan harga terjangkau.',
                 'image' => 'landing-content/hero-bg.jpg',
                 'data' => json_encode([
                     'button_text' => 'Mulai Berbelanja',
                     'button_link' => '/products',
-                    'subtitle' => 'Produk Lokal Berkualitas dari Desa untuk Anda'
+                    'subtitle' => 'Produk Berkualitas untuk Rumah dan Gaya Hidup Anda'
                 ]),
                 'is_active' => true,
             ],
             [
                 'key' => 'about-us',
-                'title' => 'Tentang BUMDes Kami',
-                'content' => 'BUMDes (Badan Usaha Milik Desa) adalah lembaga ekonomi desa yang dikelola oleh masyarakat dan pemerintahan desa. Kami berkomitmen untuk membangun ekonomi desa yang mandiri dan berkelanjutan melalui produk-produk unggulan lokal.',
+                'title' => 'Tentang Amanah Shop',
+                'content' => 'Amanah Shop adalah toko online yang menyediakan berbagai kebutuhan rumah tangga dan gaya hidup. Kami berkomitmen untuk menyediakan produk berkualitas dengan harga terjangkau dan pelayanan terbaik.',
                 'image' => 'landing-content/about-us.jpg',
                 'data' => json_encode([
-                    'vision' => 'Menjadi pusat ekonomi desa yang mandiri dan berkelanjutan',
-                    'mission' => 'Memberdayakan masyarakat desa melalui usaha produktif dan inovatif',
-                    'established' => '2020'
+                    'vision' => 'Menjadi toko online terpercaya untuk kebutuhan rumah tangga',
+                    'mission' => 'Menyediakan produk berkualitas dengan harga terjangkau dan pelayanan prima',
+                    'established' => '2024'
                 ]),
                 'is_active' => true,
             ],

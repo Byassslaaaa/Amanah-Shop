@@ -14,7 +14,6 @@ use App\Http\Controllers\SuperAdmin\User\UserController as AdminUserController;
 use App\Http\Controllers\User\Contact\ContactController;
 use App\Http\Controllers\User\Order\OrderController as UserOrderController;
 use App\Http\Controllers\User\PaymentController;
-use App\Http\Controllers\Api\RajaOngkirController;
 use App\Http\Controllers\Api\BiteshipController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\ShippingController;
@@ -25,40 +24,21 @@ use App\Http\Controllers\Admin\ShippingController;
 |--------------------------------------------------------------------------
 */
 
-// Test Collaborator Komerce API
-Route::get('/test-rajaongkir', function() {
-    $service = new \App\Services\RajaOngkirService();
+// API Routes for Biteship (Shipping)
+// ⚠️ Rate limited to prevent API abuse and reduce costs
+Route::prefix('api')->name('api.')->middleware('throttle:60,1')->group(function () {
+    // Shipping rates - more restrictive (30 requests/minute) as it calls external API
+    Route::post('/biteship/rates', [BiteshipController::class, 'getRates'])
+        ->middleware('throttle:30,1')
+        ->name('biteship.rates');
 
-    // Test 1: Get Provinces
-    $provinces = $service->getProvinces();
+    Route::get('/biteship/postal-code/search', [BiteshipController::class, 'searchPostalCode'])
+        ->middleware('throttle:30,1')
+        ->name('biteship.postal-code.search');
 
-    // Test 2: Search Destination
-    $searchResult = $service->searchDestination('jakarta');
-
-    return response()->json([
-        'status' => 'success',
-        'test_1_provinces' => [
-            'count' => count($provinces),
-            'sample' => array_slice($provinces, 0, 3)
-        ],
-        'test_2_search' => [
-            'keyword' => 'jakarta',
-            'count' => count($searchResult),
-            'sample' => array_slice($searchResult, 0, 3)
-        ]
-    ]);
-});
-
-// API Routes for RajaOngkir (AJAX)
-Route::prefix('api')->name('api.')->group(function () {
-    Route::get('/rajaongkir/provinces', [RajaOngkirController::class, 'getProvinces'])->name('rajaongkir.provinces');
-    Route::get('/rajaongkir/cities', [RajaOngkirController::class, 'getCities'])->name('rajaongkir.cities');
-    Route::post('/rajaongkir/calculate-cost', [RajaOngkirController::class, 'calculateCost'])->name('rajaongkir.calculate-cost');
-
-    // Biteship API Routes
-    Route::post('/biteship/rates', [BiteshipController::class, 'getRates'])->name('biteship.rates');
-    Route::get('/biteship/postal-code/search', [BiteshipController::class, 'searchPostalCode'])->name('biteship.postal-code.search');
-    Route::get('/biteship/tracking/{trackingId}', [BiteshipController::class, 'getTracking'])->name('biteship.tracking');
+    Route::get('/biteship/tracking/{trackingId}', [BiteshipController::class, 'getTracking'])
+        ->middleware('throttle:30,1')
+        ->name('biteship.tracking');
 });
 
 // Public Routes
@@ -81,6 +61,20 @@ Route::get('/register', [AuthController::class, 'showRegister'])->name('register
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
+// Password Reset Routes
+Route::get('/forgot-password', [\App\Http\Controllers\Auth\PasswordResetController::class, 'showLinkRequestForm'])
+    ->middleware('guest')
+    ->name('password.request');
+Route::post('/forgot-password', [\App\Http\Controllers\Auth\PasswordResetController::class, 'sendResetLinkEmail'])
+    ->middleware('guest')
+    ->name('password.email');
+Route::get('/reset-password/{token}', [\App\Http\Controllers\Auth\PasswordResetController::class, 'showResetForm'])
+    ->middleware('guest')
+    ->name('password.reset');
+Route::post('/reset-password', [\App\Http\Controllers\Auth\PasswordResetController::class, 'reset'])
+    ->middleware('guest')
+    ->name('password.update');
+
 // User Routes (Authentication Required)
 Route::middleware(['auth'])->group(function () {
     Route::get('/profile', [AuthController::class, 'profile'])->name('profile');
@@ -97,6 +91,7 @@ Route::middleware(['auth'])->group(function () {
     // Order Routes
     Route::get('/orders', [UserOrderController::class, 'index'])->name('user.orders.index');
     Route::get('/orders/{order}', [UserOrderController::class, 'show'])->name('user.orders.show');
+    Route::post('/orders/{order}/cancel', [UserOrderController::class, 'cancel'])->name('user.orders.cancel');
     Route::get('/orders/{order}/tracking', [ShippingController::class, 'show'])->name('user.orders.tracking');
     Route::get('/checkout', [UserOrderController::class, 'checkout'])->name('user.orders.checkout');
     Route::post('/checkout', [UserOrderController::class, 'store'])->name('user.orders.store');
@@ -124,7 +119,10 @@ Route::middleware(['auth'])->group(function () {
 });
 
 // Midtrans Webhook (No Auth Required)
-Route::post('/payment/notification', [PaymentController::class, 'notification'])->name('user.payment.notification');
+// ⚠️ Higher rate limit for webhook (100/min) to accommodate Midtrans retries
+Route::post('/payment/notification', [PaymentController::class, 'notification'])
+    ->middleware('throttle:100,1')
+    ->name('user.payment.notification');
 
 // Admin Routes
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
@@ -192,8 +190,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::post('movements/stock-in', [\App\Http\Controllers\Admin\Inventory\InventoryMovementController::class, 'storeStockIn'])->name('movements.stock-in');
         Route::get('movements/stock-out', [\App\Http\Controllers\Admin\Inventory\InventoryMovementController::class, 'stockOutForm'])->name('movements.stock-out-form');
         Route::post('movements/stock-out', [\App\Http\Controllers\Admin\Inventory\InventoryMovementController::class, 'storeStockOut'])->name('movements.stock-out');
-        Route::get('movements/{movement}', [\App\Http\Controllers\Admin\Inventory\InventoryMovementController::class, 'show'])->name('movements.show');
         Route::get('movements/report', [\App\Http\Controllers\Admin\Inventory\InventoryMovementController::class, 'report'])->name('movements.report');
+        Route::get('movements/{movement}', [\App\Http\Controllers\Admin\Inventory\InventoryMovementController::class, 'show'])->name('movements.show');
 
         // Suppliers
         Route::resource('suppliers', \App\Http\Controllers\Admin\Inventory\SupplierController::class);
@@ -216,9 +214,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         // Manual Credit Payments
         Route::get('payments', [\App\Http\Controllers\Admin\Credit\ManualCreditPaymentController::class, 'index'])->name('payments.index');
         Route::get('payments/overdue', [\App\Http\Controllers\Admin\Credit\ManualCreditPaymentController::class, 'overdueList'])->name('payments.overdue');
+        Route::get('payments/report', [\App\Http\Controllers\Admin\Credit\ManualCreditPaymentController::class, 'report'])->name('payments.report');
         Route::get('payments/{payment}', [\App\Http\Controllers\Admin\Credit\ManualCreditPaymentController::class, 'show'])->name('payments.show');
         Route::post('payments/{payment}/verify', [\App\Http\Controllers\Admin\Credit\ManualCreditPaymentController::class, 'verifyPayment'])->name('payments.verify');
-        Route::get('payments/report', [\App\Http\Controllers\Admin\Credit\ManualCreditPaymentController::class, 'report'])->name('payments.report');
     });
 
     // Reports
@@ -235,4 +233,16 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     // User Management (Super Admin Only) - Hanya untuk user biasa, bukan admin
     Route::resource('users', AdminUserController::class);
+
+    // About Page Management
+    Route::prefix('about')->name('about.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Admin\AboutContentController::class, 'index'])->name('index');
+        Route::get('/edit', [\App\Http\Controllers\Admin\AboutContentController::class, 'edit'])->name('edit');
+        Route::put('/', [\App\Http\Controllers\Admin\AboutContentController::class, 'update'])->name('update');
+        Route::get('/delete-image', [\App\Http\Controllers\Admin\AboutContentController::class, 'deleteImage'])->name('delete-image');
+    });
+
+    // Settings Management
+    Route::get('settings', [\App\Http\Controllers\Admin\SettingsController::class, 'index'])->name('settings.index');
+    Route::put('settings', [\App\Http\Controllers\Admin\SettingsController::class, 'update'])->name('settings.update');
 });

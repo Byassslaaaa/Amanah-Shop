@@ -51,8 +51,8 @@
                                     <tr>
                                         <td class="px-4 py-3">
                                             <div class="font-medium text-gray-900">{{ $item->product_name }}</div>
-                                            @if($item->product)
-                                                <div class="text-xs text-gray-500">Desa: {{ $item->product->village->name }}</div>
+                                            @if($item->product && $item->product->category)
+                                                <div class="text-xs text-gray-500">Kategori: {{ $item->product->category->name }}</div>
                                             @endif
                                         </td>
                                         <td class="px-4 py-3 text-right text-sm">Rp {{ number_format($item->price, 0, ',', '.') }}</td>

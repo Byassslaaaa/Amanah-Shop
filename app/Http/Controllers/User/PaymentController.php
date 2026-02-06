@@ -50,11 +50,41 @@ class PaymentController extends Controller
     }
 
     /**
+     * Verify Midtrans webhook signature
+     */
+    protected function verifyMidtransSignature(Request $request): bool
+    {
+        $serverKey = config('services.midtrans.server_key');
+        $orderId = $request->order_id;
+        $statusCode = $request->status_code;
+        $grossAmount = $request->gross_amount;
+        $signatureKey = $request->signature_key;
+
+        // Generate signature
+        $mySignature = hash('sha512', $orderId . $statusCode . $grossAmount . $serverKey);
+
+        return hash_equals($mySignature, $signatureKey);
+    }
+
+    /**
      * Handle payment notification from Midtrans (Webhook)
      */
     public function notification(Request $request)
     {
         try {
+            // ⚠️ CRITICAL: Verify webhook signature to prevent fake notifications
+            if (!$this->verifyMidtransSignature($request)) {
+                \Log::warning('Invalid Midtrans webhook signature detected', [
+                    'ip' => $request->ip(),
+                    'order_id' => $request->order_id,
+                    'headers' => $request->headers->all(),
+                ]);
+
+                return response()->json([
+                    'message' => 'Invalid signature'
+                ], 403);
+            }
+
             // Log incoming notification
             \Log::info('Midtrans Notification Received', [
                 'body' => $request->all(),
@@ -67,14 +97,35 @@ class PaymentController extends Controller
                 'notification' => $notification,
             ]);
 
-            // Find order by order number
-            $order = Order::where('order_number', $notification['order_number'])->first();
+            // Find order by order number (handle -DP suffix for down payment)
+            $orderNumber = $notification['order_number'];
+
+            // Remove -DP suffix if present (for down payment transactions)
+            if (str_ends_with($orderNumber, '-DP')) {
+                $orderNumber = substr($orderNumber, 0, -3);
+            }
+
+            $order = Order::where('order_number', $orderNumber)->first();
 
             if (!$order) {
                 \Log::error('Order not found for notification', [
-                    'order_number' => $notification['order_number'],
+                    'original_order_number' => $notification['order_number'],
+                    'normalized_order_number' => $orderNumber,
                 ]);
                 return response()->json(['message' => 'Order not found'], 404);
+            }
+
+            // ⚠️ IDEMPOTENCY CHECK: Prevent double-processing
+            if ($order->payment_status === 'paid' && $notification['payment_status'] === 'paid') {
+                \Log::info('Payment already processed (idempotency check)', [
+                    'order_id' => $order->id,
+                    'order_number' => $order->order_number,
+                    'transaction_id' => $notification['transaction_id'],
+                ]);
+
+                return response()->json([
+                    'message' => 'Payment already processed'
+                ], 200);
             }
 
             // Log before update
@@ -136,6 +187,12 @@ class PaymentController extends Controller
     public function finish(Request $request)
     {
         $orderNumber = $request->order_id;
+
+        // Remove -DP suffix if present (for down payment transactions)
+        if (str_ends_with($orderNumber, '-DP')) {
+            $orderNumber = substr($orderNumber, 0, -3);
+        }
+
         $order = Order::where('order_number', $orderNumber)->first();
 
         if (!$order) {

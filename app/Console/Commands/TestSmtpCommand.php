@@ -36,8 +36,8 @@ class TestSmtpCommand extends Command
             $smtpUsername = Setting::get('smtp_username');
             $smtpPassword = Setting::get('smtp_password');
             $smtpEncryption = Setting::get('smtp_encryption');
-            $villageHeadEmail = Setting::get('village_head_email');
-            
+            $adminEmail = Setting::get('admin_email');
+
             // Display current settings
             $this->info("\n📋 Current SMTP Settings:");
             $this->line("Host: " . ($smtpHost ?: 'Not set'));
@@ -45,10 +45,10 @@ class TestSmtpCommand extends Command
             $this->line("Username: " . ($smtpUsername ?: 'Not set'));
             $this->line("Password: " . ($smtpPassword ? str_repeat('*', strlen($smtpPassword)) : 'Not set'));
             $this->line("Encryption: " . ($smtpEncryption ?: 'Not set'));
-            $this->line("Village Head Email: " . ($villageHeadEmail ?: 'Not set'));
-            
-            if (!$villageHeadEmail) {
-                $this->error('❌ Village head email not set in settings!');
+            $this->line("Admin Email: " . ($adminEmail ?: 'Not set'));
+
+            if (!$adminEmail) {
+                $this->error('❌ Admin email not set in settings!');
                 return;
             }
             
@@ -65,19 +65,19 @@ class TestSmtpCommand extends Command
                 'email' => 'admin@test.com',
                 'subject' => 'Test SMTP Configuration',
                 'messageContent' => 'This is a test email to verify SMTP configuration is working properly. If you receive this email, the SMTP setup is successful!',
-            ], function ($mail) use ($villageHeadEmail) {
-                $mail->to($villageHeadEmail)
+            ], function ($mail) use ($adminEmail) {
+                $mail->to($adminEmail)
                      ->subject('✅ Test: SMTP Configuration Berhasil!')
                      ->from(config('mail.from.address'), 'Test SMTP System')
                      ->replyTo('admin@test.com', 'Test Admin');
             });
-            
+
             $this->info('✅ Email sent successfully!');
-            
+
             if (!$smtpHost || !$smtpUsername || !$smtpPassword) {
                 $this->info('📝 Check storage/logs/laravel.log for email content (using log driver)');
             } else {
-                $this->info('📧 Check inbox at: ' . $villageHeadEmail);
+                $this->info('📧 Check inbox at: ' . $adminEmail);
             }
             
         } catch (\Exception $e) {

@@ -41,9 +41,16 @@ class DashboardController extends Controller
             ->get();
 
         // ========== INVENTORY STATISTICS ==========
-        $lowStockProducts = Product::where('stock', '<', 10)->where('stock', '>', 0)->count();
-        $outOfStockProducts = Product::where('stock', 0)->count();
-        $activeProducts = Product::where('status', 'active')->count();
+        // Optimize inventory queries - single query
+        $inventoryStats = Product::selectRaw('
+            COUNT(CASE WHEN stock < 10 AND stock > 0 THEN 1 END) as low_stock,
+            COUNT(CASE WHEN stock = 0 THEN 1 END) as out_of_stock,
+            COUNT(CASE WHEN status = "active" THEN 1 END) as active_count
+        ')->first();
+
+        $lowStockProducts = $inventoryStats->low_stock ?? 0;
+        $outOfStockProducts = $inventoryStats->out_of_stock ?? 0;
+        $activeProducts = $inventoryStats->active_count ?? 0;
 
         // Low stock product list
         $lowStockList = Product::with('category')
@@ -59,17 +66,17 @@ class DashboardController extends Controller
             ->get();
 
         // ========== FINANCIAL STATISTICS ==========
-        // This month income/expense
-        $monthlyIncome = FinancialTransaction::where('type', 'income')
-            ->whereMonth('transaction_date', $thisMonth->month)
+        // Optimize financial queries - single query for income and expense
+        $financialStats = FinancialTransaction::whereMonth('transaction_date', $thisMonth->month)
             ->whereYear('transaction_date', $thisMonth->year)
-            ->sum('amount');
+            ->selectRaw('
+                SUM(CASE WHEN type = "income" THEN amount ELSE 0 END) as total_income,
+                SUM(CASE WHEN type = "expense" THEN amount ELSE 0 END) as total_expense
+            ')
+            ->first();
 
-        $monthlyExpense = FinancialTransaction::where('type', 'expense')
-            ->whereMonth('transaction_date', $thisMonth->month)
-            ->whereYear('transaction_date', $thisMonth->year)
-            ->sum('amount');
-
+        $monthlyIncome = $financialStats->total_income ?? 0;
+        $monthlyExpense = $financialStats->total_expense ?? 0;
         $monthlyBalance = $monthlyIncome - $monthlyExpense;
 
         // Recent financial transactions
@@ -98,19 +105,28 @@ class DashboardController extends Controller
         }
 
         // ========== CREDIT STATISTICS ==========
-        $activeCredits = ManualCredit::where('status', 'active')->count();
-        $totalReceivable = ManualCredit::where('status', 'active')->sum('remaining_balance');
-        $totalCreditPaid = ManualCredit::sum('amount_paid');
+        // Optimize credit queries
+        $creditStats = ManualCredit::selectRaw('
+            COUNT(CASE WHEN status = "active" THEN 1 END) as active_count,
+            SUM(CASE WHEN status = "active" THEN remaining_balance ELSE 0 END) as total_receivable,
+            SUM(IFNULL(total_paid, 0)) as total_paid
+        ')->first();
 
-        // Overdue payments
-        $overduePayments = ManualCreditPayment::where('status', '!=', 'paid')
-            ->where('due_date', '<', $today)
-            ->count();
+        $activeCredits = $creditStats->active_count ?? 0;
+        $totalReceivable = $creditStats->total_receivable ?? 0;
+        $totalCreditPaid = $creditStats->total_paid ?? 0;
 
-        $overdueAmount = ManualCreditPayment::where('status', '!=', 'paid')
+        // Overdue payments - single query
+        $overdueStats = ManualCreditPayment::where('status', '!=', 'paid')
             ->where('due_date', '<', $today)
-            ->selectRaw('SUM(amount_due - amount_paid) as total')
-            ->value('total') ?? 0;
+            ->selectRaw('
+                COUNT(*) as count,
+                SUM(amount_due - amount_paid) as total_amount
+            ')
+            ->first();
+
+        $overduePayments = $overdueStats->count ?? 0;
+        $overdueAmount = $overdueStats->total_amount ?? 0;
 
         // Upcoming payments (next 7 days)
         $upcomingPayments = ManualCreditPayment::with('manualCredit')

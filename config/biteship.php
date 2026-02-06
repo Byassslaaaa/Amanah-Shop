@@ -57,17 +57,22 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Default Origin
+    | Shop Origin (Single Shop Configuration)
     |--------------------------------------------------------------------------
     |
-    | Default origin for shipping rates calculation
-    | This will be overridden by village-specific settings
+    | Origin location for shipping rates calculation and shipment creation
+    | Used for single shop setup (no multi-village)
     |
     */
 
-    'default_origin' => [
-        'latitude' => env('BITESHIP_DEFAULT_ORIGIN_LAT'),
-        'longitude' => env('BITESHIP_DEFAULT_ORIGIN_LNG'),
+    'shop_origin' => [
+        'contact_name' => env('BITESHIP_ORIGIN_CONTACT_NAME', 'Amanah Shop'),
+        'contact_phone' => env('BITESHIP_ORIGIN_CONTACT_PHONE'),
+        'address' => env('BITESHIP_ORIGIN_ADDRESS'),
+        'postal_code' => env('BITESHIP_ORIGIN_POSTAL_CODE'),
+        'latitude' => env('BITESHIP_ORIGIN_LAT'),
+        'longitude' => env('BITESHIP_ORIGIN_LNG'),
+        'note' => env('BITESHIP_ORIGIN_NOTE', 'Toko'),
     ],
 
 ];

@@ -22,7 +22,7 @@ class WhatsappMarketplaceSeeder extends Seeder
             [
                 'name' => 'Kerajinan Tangan',
                 'type' => 'barang',
-                'description' => 'Hasil kerajinan tangan dari warga desa'
+                'description' => 'Hasil kerajinan tangan dari pengrajin lokal'
             ],
             [
                 'name' => 'Pertanian',
@@ -142,18 +142,18 @@ class WhatsappMarketplaceSeeder extends Seeder
 
         // Create admin user if not exists
         User::firstOrCreate(
-            ['email' => 'admin@bumdes.com'],
+            ['email' => 'admin@amanah.shop'],
             [
-                'name' => 'Admin BUMDes',
+                'name' => 'Admin Amanah',
                 'password' => bcrypt('password'),
                 'role' => 'admin',
                 'phone' => '081234567890',
-                'address' => 'Kantor BUMDes Desa Maju'
+                'address' => 'Amanah Shop'
             ]
         );
 
         echo "WhatsApp Marketplace seeder completed!\n";
         echo "Products created with WhatsApp integration\n";
-        echo "Admin login: admin@bumdes.com / password\n";
+        echo "Admin login: admin@amanah.shop / password\n";
     }
 }

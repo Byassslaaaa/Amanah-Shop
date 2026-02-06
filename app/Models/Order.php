@@ -34,6 +34,8 @@ class Order extends Model
         'delivered_at',
         'tracking_updated_at',
         'completed_at',
+        'cancelled_at',
+        'cancellation_reason',
         'midtrans_order_id',
         'midtrans_transaction_id',
         'midtrans_transaction_status',
@@ -60,6 +62,7 @@ class Order extends Model
         'delivered_at' => 'datetime',
         'tracking_updated_at' => 'datetime',
         'completed_at' => 'datetime',
+        'cancelled_at' => 'datetime',
         'shipping_history' => 'array',
         // Credit casts
         'down_payment_amount' => 'decimal:2',
@@ -134,6 +137,7 @@ class Order extends Model
 
     /**
      * Update credit balance after payment
+     * ⚠️ CRITICAL: Uses pessimistic locking to prevent race conditions
      */
     public function updateCreditBalance()
     {
@@ -141,21 +145,32 @@ class Order extends Model
             return;
         }
 
-        $totalPaid = $this->installmentPayments()->sum('amount_paid');
-        $remaining = $this->total_credit_amount - $totalPaid;
+        // ⚠️ ATOMIC: Wrap in transaction with pessimistic lock
+        \DB::transaction(function () {
+            // Lock this order for update to prevent concurrent modifications
+            $order = self::lockForUpdate()->find($this->id);
 
-        $this->update([
-            'total_paid' => $totalPaid,
-            'remaining_balance' => max(0, $remaining),
-        ]);
+            // Recalculate total paid with fresh data
+            $totalPaid = $order->installmentPayments()->sum('amount_paid');
+            $remaining = $order->total_credit_amount - $totalPaid;
 
-        // Update payment status
-        if ($remaining <= 0) {
-            $this->update([
-                'payment_status' => 'installment_completed',
-                'fully_paid_at' => now(),
+            // Update balance
+            $order->update([
+                'total_paid' => $totalPaid,
+                'remaining_balance' => max(0, $remaining),
             ]);
-        }
+
+            // Update payment status if fully paid
+            if ($remaining <= 0) {
+                $order->update([
+                    'payment_status' => 'installment_completed',
+                    'fully_paid_at' => now(),
+                ]);
+            }
+
+            // Refresh current model instance
+            $this->refresh();
+        });
     }
 
     /**

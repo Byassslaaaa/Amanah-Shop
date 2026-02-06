@@ -16,14 +16,14 @@ class ManualCredit extends Model
         'customer_phone',
         'customer_address',
         'description',
-        'installment_plan_id',
         'loan_amount',
         'down_payment',
         'principal_amount',
+        'interest_rate',
         'interest_amount',
         'total_amount',
-        'monthly_installment',
         'installment_months',
+        'monthly_installment',
         'total_paid',
         'remaining_balance',
         'status',
@@ -36,22 +36,16 @@ class ManualCredit extends Model
         'loan_amount' => 'decimal:2',
         'down_payment' => 'decimal:2',
         'principal_amount' => 'decimal:2',
+        'interest_rate' => 'decimal:2',
         'interest_amount' => 'decimal:2',
         'total_amount' => 'decimal:2',
+        'installment_months' => 'integer',
         'monthly_installment' => 'decimal:2',
         'total_paid' => 'decimal:2',
         'remaining_balance' => 'decimal:2',
         'start_date' => 'date',
         'end_date' => 'date',
     ];
-
-    /**
-     * Relationship: Installment plan
-     */
-    public function installmentPlan()
-    {
-        return $this->belongsTo(InstallmentPlan::class);
-    }
 
     /**
      * Relationship: Payments

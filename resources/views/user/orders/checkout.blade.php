@@ -11,6 +11,47 @@
             <p class="text-gray-600 mt-2 text-sm sm:text-base">Review pesanan Anda dan selesaikan pembayaran</p>
         </div>
 
+        <!-- Progress Indicator -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <div class="flex items-center justify-between">
+                <!-- Step 1: Review Items -->
+                <div class="flex-1 text-center relative">
+                    <div id="step1-icon" class="w-10 h-10 mx-auto rounded-full flex items-center justify-center bg-green-500 text-white font-bold transition-all">
+                        1
+                    </div>
+                    <p class="text-xs mt-2 font-medium text-gray-700">Review Items</p>
+                    <div class="absolute top-5 left-1/2 w-full h-1 bg-gray-200 -z-10 hidden sm:block"></div>
+                </div>
+
+                <!-- Step 2: Shipping Address -->
+                <div class="flex-1 text-center relative">
+                    <div id="step2-icon" class="w-10 h-10 mx-auto rounded-full flex items-center justify-center bg-gray-300 text-gray-600 font-bold transition-all">
+                        2
+                    </div>
+                    <p class="text-xs mt-2 font-medium text-gray-500" id="step2-text">Shipping Address</p>
+                    <div class="absolute top-5 left-0 w-full h-1 bg-gray-200 -z-10 hidden sm:block" id="step2-line"></div>
+                </div>
+
+                <!-- Step 3: Shipping Method -->
+                <div class="flex-1 text-center relative">
+                    <div id="step3-icon" class="w-10 h-10 mx-auto rounded-full flex items-center justify-center bg-gray-300 text-gray-600 font-bold transition-all">
+                        3
+                    </div>
+                    <p class="text-xs mt-2 font-medium text-gray-500" id="step3-text">Shipping Method</p>
+                    <div class="absolute top-5 left-0 w-full h-1 bg-gray-200 -z-10 hidden sm:block" id="step3-line"></div>
+                </div>
+
+                <!-- Step 4: Payment -->
+                <div class="flex-1 text-center relative">
+                    <div id="step4-icon" class="w-10 h-10 mx-auto rounded-full flex items-center justify-center bg-gray-300 text-gray-600 font-bold transition-all">
+                        4
+                    </div>
+                    <p class="text-xs mt-2 font-medium text-gray-500" id="step4-text">Payment</p>
+                    <div class="absolute top-5 left-0 w-full h-1 bg-gray-200 -z-10 hidden sm:block" id="step4-line"></div>
+                </div>
+            </div>
+        </div>
+
         <form action="{{ route('user.orders.store') }}" method="POST" id="checkout-form">
             @csrf
 
@@ -673,9 +714,9 @@ async function calculateShippingBiteship() {
         // Single shop - use default origin from env or config
         // For Amanah Shop, all products ship from one location
         const shopOrigin = {
-            latitude: {{ config('services.biteship.default_origin_lat', -6.175110) }},
-            longitude: {{ config('services.biteship.default_origin_lng', 106.865036) }},
-            postal_code: '{{ config('services.biteship.default_origin_postal', '12345') }}'
+            latitude: {{ config('biteship.shop_origin.latitude', -6.175110) }},
+            longitude: {{ config('biteship.shop_origin.longitude', 106.865036) }},
+            postal_code: '{{ config('biteship.shop_origin.postal_code', '12345') }}'
         };
 
         // Map all cart items for shipping
@@ -902,6 +943,110 @@ if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', setupValidationListeners);
 } else {
     setupValidationListeners();
+}
+
+// ===== CHECKOUT PROGRESS TRACKING =====
+function updateProgressIndicator() {
+    // Step 1: Review Items (always completed - items are pre-loaded)
+    updateStepStatus(1, true);
+
+    // Step 2: Shipping Address
+    const addressValid = isAddressValid();
+    updateStepStatus(2, addressValid);
+
+    // Step 3: Shipping Method
+    const shippingCost = document.querySelector('input[name="shipping_cost"]')?.value;
+    const shippingSelected = shippingCost && parseInt(shippingCost) > 0;
+    updateStepStatus(3, shippingSelected && addressValid);
+
+    // Step 4: Payment Method
+    const paymentMethod = document.querySelector('input[name="payment_method"]:checked');
+    updateStepStatus(4, paymentMethod !== null && shippingSelected && addressValid);
+}
+
+function isAddressValid() {
+    const recipientName = document.querySelector('input[name="recipient_name"]')?.value.trim();
+    const phone = document.querySelector('input[name="phone"]')?.value.trim();
+    const provinceId = document.querySelector('input[name="province_id"]')?.value;
+    const cityId = document.querySelector('input[name="city_id"]')?.value;
+    const postalCode = document.querySelector('input[name="postal_code"]')?.value.trim();
+    const fullAddress = document.querySelector('textarea[name="full_address"]')?.value.trim();
+
+    return recipientName && phone && provinceId && cityId && postalCode && fullAddress;
+}
+
+function updateStepStatus(stepNumber, isCompleted) {
+    const icon = document.getElementById(`step${stepNumber}-icon`);
+    const text = document.getElementById(`step${stepNumber}-text`);
+    const line = document.getElementById(`step${stepNumber}-line`);
+
+    if (isCompleted) {
+        // Mark as completed
+        icon.className = 'w-10 h-10 mx-auto rounded-full flex items-center justify-center bg-green-500 text-white font-bold transition-all';
+        icon.innerHTML = '<svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>';
+        if (text) {
+            text.className = 'text-xs mt-2 font-medium text-green-600';
+        }
+        if (line) {
+            line.className = 'absolute top-5 left-0 w-full h-1 bg-green-500 -z-10 hidden sm:block transition-all';
+        }
+    } else {
+        // Mark as pending
+        icon.className = 'w-10 h-10 mx-auto rounded-full flex items-center justify-center bg-gray-300 text-gray-600 font-bold transition-all';
+        icon.textContent = stepNumber;
+        if (text) {
+            text.className = 'text-xs mt-2 font-medium text-gray-500';
+        }
+        if (line) {
+            line.className = 'absolute top-5 left-0 w-full h-1 bg-gray-200 -z-10 hidden sm:block transition-all';
+        }
+    }
+}
+
+// Add event listeners for progress tracking
+function setupProgressTracking() {
+    // Track address fields
+    const addressFields = [
+        'input[name="recipient_name"]',
+        'input[name="phone"]',
+        'input[name="province_id"]',
+        'input[name="city_id"]',
+        'input[name="postal_code"]',
+        'textarea[name="full_address"]'
+    ];
+
+    addressFields.forEach(selector => {
+        const element = document.querySelector(selector);
+        if (element) {
+            element.addEventListener('input', updateProgressIndicator);
+        }
+    });
+
+    // Track shipping selection
+    const shippingCostInput = document.querySelector('input[name="shipping_cost"]');
+    if (shippingCostInput) {
+        const observer = new MutationObserver(updateProgressIndicator);
+        observer.observe(shippingCostInput, { attributes: true, attributeFilter: ['value'] });
+
+        // Also listen for manual changes
+        shippingCostInput.addEventListener('change', updateProgressIndicator);
+    }
+
+    // Track payment method selection
+    const paymentMethods = document.querySelectorAll('input[name="payment_method"]');
+    paymentMethods.forEach(radio => {
+        radio.addEventListener('change', updateProgressIndicator);
+    });
+
+    // Initial update
+    updateProgressIndicator();
+}
+
+// Initialize progress tracking
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupProgressTracking);
+} else {
+    setupProgressTracking();
 }
 
 // Close search results when clicking outside

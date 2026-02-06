@@ -5,14 +5,13 @@ namespace App\Http\Controllers\Admin\Credit;
 use App\Http\Controllers\Controller;
 use App\Models\Credit\ManualCredit;
 use App\Models\Credit\ManualCreditPayment;
-use App\Models\Credit\InstallmentPlan;
 use Illuminate\Http\Request;
 
 class ManualCreditController extends Controller
 {
     public function index(Request $request)
     {
-        $query = ManualCredit::with('installmentPlan');
+        $query = ManualCredit::query();
 
         // Filter by status
         if ($request->filled('status')) {
@@ -44,8 +43,7 @@ class ManualCreditController extends Controller
 
     public function create()
     {
-        $installmentPlans = InstallmentPlan::active()->orderBy('months')->get();
-        return view('admin.credits.manual.create', compact('installmentPlans'));
+        return view('admin.credits.manual.create');
     }
 
     public function store(Request $request)
@@ -55,13 +53,13 @@ class ManualCreditController extends Controller
             'customer_phone' => 'nullable|string|max:20',
             'customer_address' => 'nullable|string',
             'description' => 'required|string',
-            'installment_plan_id' => 'required|exists:installment_plans,id',
+            'interest_rate' => 'required|numeric|min:0|max:100',
+            'installment_months' => 'required|integer|min:1|max:360',
             'loan_amount' => 'required|numeric|min:1',
             'down_payment' => 'nullable|numeric|min:0',
             'start_date' => 'required|date|after_or_equal:today'
         ]);
 
-        $plan = InstallmentPlan::findOrFail($request->installment_plan_id);
         $downPayment = $request->down_payment ?? 0;
         $loanAmount = $request->loan_amount;
 
@@ -72,10 +70,15 @@ class ManualCreditController extends Controller
                 ->withErrors(['down_payment' => 'Uang muka harus lebih kecil dari jumlah pinjaman.']);
         }
 
+        // Calculate loan details
         $principalAmount = $loanAmount - $downPayment;
-        $interestAmount = $plan->calculateInterest($principalAmount);
+
+        // Interest calculation: (principal * rate / 100) * (months / 12)
+        // This gives simple interest based on the duration
+        $interestAmount = ($principalAmount * $request->interest_rate / 100) * ($request->installment_months / 12);
+
         $totalAmount = $principalAmount + $interestAmount;
-        $monthlyInstallment = $plan->calculateMonthlyPayment($principalAmount);
+        $monthlyInstallment = $totalAmount / $request->installment_months;
 
         // Create credit
         $credit = ManualCredit::create([
@@ -84,14 +87,14 @@ class ManualCreditController extends Controller
             'customer_phone' => $request->customer_phone,
             'customer_address' => $request->customer_address,
             'description' => $request->description,
-            'installment_plan_id' => $plan->id,
+            'interest_rate' => $request->interest_rate,
             'loan_amount' => $loanAmount,
             'down_payment' => $downPayment,
             'principal_amount' => $principalAmount,
             'interest_amount' => $interestAmount,
             'total_amount' => $totalAmount,
             'monthly_installment' => $monthlyInstallment,
-            'installment_months' => $plan->months,
+            'installment_months' => $request->installment_months,
             'total_paid' => 0,
             'remaining_balance' => $totalAmount,
             'status' => 'active',
@@ -101,7 +104,7 @@ class ManualCreditController extends Controller
 
         // Generate payment schedule
         $startDate = \Carbon\Carbon::parse($request->start_date);
-        for ($i = 1; $i <= $plan->months; $i++) {
+        for ($i = 1; $i <= $request->installment_months; $i++) {
             $dueDate = $startDate->copy()->addMonths($i);
 
             ManualCreditPayment::create([
@@ -121,7 +124,7 @@ class ManualCreditController extends Controller
 
     public function show(ManualCredit $credit)
     {
-        $credit->load(['installmentPlan', 'payments' => function($q) {
+        $credit->load(['payments' => function($q) {
             $q->orderBy('installment_number');
         }, 'creator']);
 
@@ -136,8 +139,7 @@ class ManualCreditController extends Controller
                 ->with('error', 'Kredit tidak dapat diedit karena sudah ada pembayaran.');
         }
 
-        $installmentPlans = InstallmentPlan::active()->orderBy('months')->get();
-        return view('admin.credits.manual.edit', compact('credit', 'installmentPlans'));
+        return view('admin.credits.manual.edit', compact('credit'));
     }
 
     public function update(Request $request, ManualCredit $credit)
