@@ -45,15 +45,15 @@ class BiteshipController extends Controller
     {
         try {
             $validated = $request->validate([
-                'destination_latitude' => 'required|numeric',
-                'destination_longitude' => 'required|numeric',
-                'destination_postal_code' => 'nullable|string',
-                'couriers' => 'nullable|string',
-                'items' => 'required|array',
-                'items.*.name' => 'required|string',
-                'items.*.value' => 'required|numeric',
-                'items.*.weight' => 'required|numeric',
-                'items.*.quantity' => 'required|integer|min:1',
+                'destination_latitude' => 'required|numeric|between:-90,90',
+                'destination_longitude' => 'required|numeric|between:-180,180',
+                'destination_postal_code' => 'nullable|string|max:10|regex:/^\d{3,10}$/',
+                'couriers' => 'nullable|string|max:200',
+                'items' => 'required|array|max:50',
+                'items.*.name' => 'required|string|max:255',
+                'items.*.value' => 'required|numeric|min:0|max:999999999',
+                'items.*.weight' => 'required|numeric|min:1|max:500000',
+                'items.*.quantity' => 'required|integer|min:1|max:1000',
             ]);
 
             // Get shop origin coordinates from database settings

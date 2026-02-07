@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 
 class AdminManagementController extends Controller
@@ -40,14 +41,24 @@ class AdminManagementController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:3|confirmed',
+            'password' => 'required|string|min:8|confirmed',
             'role' => ['required', Rule::in(['admin', 'superadmin'])],
             'phone' => 'nullable|string|max:20',
         ]);
 
+        $role = $validated['role'];
+        unset($validated['role']);
         $validated['password'] = Hash::make($validated['password']);
 
-        User::create($validated);
+        $user = User::create($validated);
+        $user->role = $role;
+        $user->save();
+
+        Log::info('Admin created', [
+            'created_by' => auth()->id(),
+            'new_admin_id' => $user->id,
+            'role' => $role,
+        ]);
 
         return redirect()->route('admin.admins.index')
             ->with('success', 'Admin berhasil ditambahkan!');
@@ -73,10 +84,14 @@ class AdminManagementController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($admin->id)],
-            'password' => 'nullable|string|min:3|confirmed',
+            'password' => 'nullable|string|min:8|confirmed',
             'role' => ['required', Rule::in(['admin', 'superadmin'])],
             'phone' => 'nullable|string|max:20',
         ]);
+
+        // Extract role before mass assignment (role is guarded)
+        $newRole = $validated['role'];
+        unset($validated['role']);
 
         // Update password hanya jika diisi
         if (!empty($validated['password'])) {
@@ -85,7 +100,19 @@ class AdminManagementController extends Controller
             unset($validated['password']);
         }
 
+        // Log role change
+        if ($admin->role !== $newRole) {
+            Log::alert('Admin role changed', [
+                'changed_by' => auth()->id(),
+                'admin_id' => $admin->id,
+                'old_role' => $admin->role,
+                'new_role' => $newRole,
+            ]);
+        }
+
         $admin->update($validated);
+        $admin->role = $newRole;
+        $admin->save();
 
         return redirect()->route('admin.admins.index')
             ->with('success', 'Admin berhasil diupdate!');

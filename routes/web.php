@@ -229,10 +229,12 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     });
 
     // Admin Management (SuperAdmin Only)
-    Route::resource('admins', AdminManagementController::class);
+    Route::middleware(['superadmin'])->group(function () {
+        Route::resource('admins', AdminManagementController::class);
 
-    // User Management (Super Admin Only) - Hanya untuk user biasa, bukan admin
-    Route::resource('users', AdminUserController::class);
+        // User Management (Super Admin Only) - Hanya untuk user biasa, bukan admin
+        Route::resource('users', AdminUserController::class);
+    });
 
     // About Page Management
     Route::prefix('about')->name('about.')->group(function () {

@@ -60,8 +60,9 @@ class AuthController extends Controller
             'password' => Hash::make($validated['password']),
             'phone' => $validated['phone'],
             'address' => $validated['address'],
-            'role' => 'user',
         ]);
+        $user->role = 'user';
+        $user->save();
 
         Auth::login($user);
 

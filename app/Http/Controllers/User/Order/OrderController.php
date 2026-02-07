@@ -153,13 +153,13 @@ class OrderController extends Controller
             'city_name' => 'required|string',
             'district' => 'nullable|string|max:255',
             'postal_code' => 'required|string|max:10',
-            'full_address' => 'required|string',
-            'latitude' => 'nullable|numeric',
-            'longitude' => 'nullable|numeric',
+            'full_address' => 'required|string|max:1000',
+            'latitude' => 'nullable|numeric|between:-90,90',
+            'longitude' => 'nullable|numeric|between:-180,180',
             // Shipping service validation
-            'shipping_cost' => 'required|integer|min:0',
-            'shipping_service' => 'required|string',
-            'shipping_etd' => 'nullable|string',
+            'shipping_cost' => 'required|integer|min:0|max:10000000',
+            'shipping_service' => 'required|string|max:100',
+            'shipping_etd' => 'nullable|string|max:100',
         ]);
 
         // Hanya ambil item yang selected
@@ -207,11 +207,28 @@ class OrderController extends Controller
                 'is_default' => false,
             ]);
 
-            // Calculate total (products + shipping)
+            // Calculate total using server-side prices (NOT client-submitted)
             $productTotal = $cartItems->sum(function ($item) {
                 return $item->quantity * $item->product->price;
             });
+
+            // Sanity check: shipping cost should not exceed product total
+            if ($validated['shipping_cost'] > $productTotal) {
+                DB::rollBack();
+                return redirect()->back()
+                    ->with('error', 'Biaya pengiriman tidak valid. Silakan hitung ulang ongkir.');
+            }
+
             $totalAmount = $productTotal + $validated['shipping_cost'];
+
+            // Validate down payment doesn't exceed total for credit orders
+            if ($validated['payment_type'] === 'credit' && isset($validated['down_payment'])) {
+                if ($validated['down_payment'] > $totalAmount) {
+                    DB::rollBack();
+                    return redirect()->back()
+                        ->with('error', 'Uang muka tidak boleh melebihi total pesanan.');
+                }
+            }
 
             // Prepare order data
             $orderData = [
@@ -353,18 +370,6 @@ class OrderController extends Controller
             abort(403, 'Anda tidak memiliki akses ke order ini');
         }
 
-        // Validasi: hanya order pending yang bisa dicancel
-        if ($order->status !== 'pending') {
-            return redirect()->back()
-                ->with('error', 'Order tidak dapat dibatalkan. Hanya order dengan status "Menunggu Pembayaran" yang dapat dibatalkan.');
-        }
-
-        // Validasi: tidak boleh cancel jika sudah paid
-        if ($order->payment_status === 'paid') {
-            return redirect()->back()
-                ->with('error', 'Order tidak dapat dibatalkan karena pembayaran sudah diterima. Silakan hubungi admin untuk refund.');
-        }
-
         $validated = $request->validate([
             'cancellation_reason' => 'required|string|max:500',
         ], [
@@ -375,16 +380,31 @@ class OrderController extends Controller
         DB::beginTransaction();
 
         try {
+            // ATOMIC: Lock order and re-check status to prevent race with webhook
+            $order = Order::lockForUpdate()->find($order->id);
+
+            // Validasi: hanya order pending yang bisa dicancel (re-check after lock)
+            if ($order->status !== 'pending') {
+                DB::rollBack();
+                return redirect()->back()
+                    ->with('error', 'Order tidak dapat dibatalkan. Status telah berubah.');
+            }
+
+            // Validasi: tidak boleh cancel jika sudah paid (re-check after lock)
+            if ($order->payment_status === 'paid') {
+                DB::rollBack();
+                return redirect()->back()
+                    ->with('error', 'Order tidak dapat dibatalkan karena pembayaran sudah diterima.');
+            }
+
             // 1. Restore stock untuk setiap item
             foreach ($order->items as $item) {
                 $product = \App\Models\Product\Product::lockForUpdate()
                     ->find($item->product_id);
 
                 if ($product) {
-                    // Kembalikan stock
                     $product->increment('stock', $item->quantity);
 
-                    // Reverse inventory movement
                     \App\Models\Inventory\InventoryMovement::record(
                         $item->product_id,
                         'in',

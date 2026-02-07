@@ -85,20 +85,26 @@ class PaymentController extends Controller
                 ], 403);
             }
 
-            // Log incoming notification
+            // Log incoming notification (sanitized - no sensitive payment data)
             \Log::info('Midtrans Notification Received', [
-                'body' => $request->all(),
+                'order_id' => $request->order_id,
+                'transaction_status' => $request->transaction_status,
+                'ip' => $request->ip(),
             ]);
 
             $notification = $this->midtransService->handleNotification();
 
-            // Log processed notification data
-            \Log::info('Midtrans Notification Processed', [
-                'notification' => $notification,
-            ]);
-
             // Find order by order number (handle -DP suffix for down payment)
             $orderNumber = $notification['order_number'];
+
+            // Validate order number format
+            if (!preg_match('/^ORD\d{8}[A-F0-9]{6,8}(-DP)?$/i', $orderNumber)) {
+                \Log::warning('Invalid order number format in webhook', [
+                    'order_number' => $orderNumber,
+                    'ip' => $request->ip(),
+                ]);
+                return response()->json(['message' => 'Invalid order format'], 400);
+            }
 
             // Remove -DP suffix if present (for down payment transactions)
             if (str_ends_with($orderNumber, '-DP')) {
@@ -109,61 +115,65 @@ class PaymentController extends Controller
 
             if (!$order) {
                 \Log::error('Order not found for notification', [
-                    'original_order_number' => $notification['order_number'],
-                    'normalized_order_number' => $orderNumber,
+                    'order_number' => $orderNumber,
                 ]);
                 return response()->json(['message' => 'Order not found'], 404);
             }
 
-            // ⚠️ IDEMPOTENCY CHECK: Prevent double-processing
-            if ($order->payment_status === 'paid' && $notification['payment_status'] === 'paid') {
-                \Log::info('Payment already processed (idempotency check)', [
+            // ATOMIC PROCESSING: Use transaction + pessimistic lock
+            $result = DB::transaction(function () use ($order, $notification) {
+                // Lock order to prevent concurrent webhook processing
+                $order = Order::lockForUpdate()->find($order->id);
+
+                // Idempotency check AFTER lock (prevents race condition)
+                if ($order->payment_status === 'paid' && $notification['payment_status'] === 'paid') {
+                    return 'already_processed';
+                }
+
+                // Check for duplicate transaction_id on different orders
+                if (!empty($notification['transaction_id'])) {
+                    $duplicate = Order::where('midtrans_transaction_id', $notification['transaction_id'])
+                        ->where('id', '!=', $order->id)
+                        ->exists();
+                    if ($duplicate) {
+                        \Log::alert('Duplicate transaction_id across orders', [
+                            'transaction_id' => $notification['transaction_id'],
+                            'order_id' => $order->id,
+                        ]);
+                        return 'duplicate_transaction';
+                    }
+                }
+
+                \Log::info('Updating order payment status', [
                     'order_id' => $order->id,
-                    'order_number' => $order->order_number,
-                    'transaction_id' => $notification['transaction_id'],
+                    'old_status' => $order->payment_status,
+                    'new_status' => $notification['payment_status'],
                 ]);
 
-                return response()->json([
-                    'message' => 'Payment already processed'
-                ], 200);
+                // Update order payment status
+                $order->update([
+                    'midtrans_transaction_id' => $notification['transaction_id'],
+                    'midtrans_transaction_status' => $notification['transaction_status'],
+                    'payment_status' => $notification['payment_status'],
+                    'paid_at' => $notification['payment_status'] === 'paid' ? now() : null,
+                ]);
+
+                // Update order status based on payment status
+                if ($notification['payment_status'] === 'paid') {
+                    $order->update(['status' => 'processing']);
+                } elseif (in_array($notification['payment_status'], ['failed', 'expired', 'cancelled'])) {
+                    $order->update(['status' => 'cancelled']);
+                }
+
+                return 'success';
+            });
+
+            if ($result === 'already_processed') {
+                return response()->json(['message' => 'Payment already processed'], 200);
             }
 
-            // Log before update
-            \Log::info('Updating order payment status', [
-                'order_id' => $order->id,
-                'order_number' => $order->order_number,
-                'old_payment_status' => $order->payment_status,
-                'new_payment_status' => $notification['payment_status'],
-            ]);
-
-            // Update order payment status
-            $order->update([
-                'midtrans_transaction_id' => $notification['transaction_id'],
-                'midtrans_transaction_status' => $notification['transaction_status'],
-                'payment_status' => $notification['payment_status'],
-                'paid_at' => $notification['payment_status'] === 'paid' ? now() : null,
-            ]);
-
-            // Update order status based on payment status
-            if ($notification['payment_status'] === 'paid') {
-                $order->update([
-                    'status' => 'processing', // Set to processing, not completed
-                ]);
-
-                \Log::info('Order payment successful', [
-                    'order_id' => $order->id,
-                    'order_number' => $order->order_number,
-                    'payment_status' => $order->payment_status,
-                    'status' => $order->status,
-                ]);
-            } elseif (in_array($notification['payment_status'], ['failed', 'expired', 'cancelled'])) {
-                $order->update(['status' => 'cancelled']);
-
-                \Log::info('Order payment failed/cancelled', [
-                    'order_id' => $order->id,
-                    'order_number' => $order->order_number,
-                    'payment_status' => $order->payment_status,
-                ]);
+            if ($result === 'duplicate_transaction') {
+                return response()->json(['message' => 'Duplicate transaction'], 400);
             }
 
             return response()->json(['message' => 'Notification handled successfully']);
@@ -171,12 +181,10 @@ class PaymentController extends Controller
         } catch (\Exception $e) {
             \Log::error('Midtrans Notification Error', [
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
             ]);
 
             return response()->json([
                 'message' => 'Error handling notification',
-                'error' => $e->getMessage()
             ], 500);
         }
     }

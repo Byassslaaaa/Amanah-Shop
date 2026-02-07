@@ -6,12 +6,23 @@ use App\Http\Controllers\Controller;
 use App\Models\Order\Cart;
 use App\Models\Product\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class CartController extends Controller
 {
     public function index()
     {
-        $cartItems = auth()->user()->carts()->with(['product.category'])->get();
+        $cartItems = auth()->user()->carts()
+            ->with(['product.category'])
+            ->whereHas('product', function ($query) {
+                $query->where('status', 'active');
+            })
+            ->get();
+
+        // Remove cart items whose products have been deleted
+        auth()->user()->carts()
+            ->whereDoesntHave('product')
+            ->delete();
 
         // Hitung total hanya dari item yang selected
         $total = $cartItems->where('is_selected', true)->sum(function ($item) {

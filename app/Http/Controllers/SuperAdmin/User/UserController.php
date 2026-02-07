@@ -68,15 +68,16 @@ class UserController extends Controller
 
         // Selalu buat sebagai user biasa (role='user')
         // Untuk buat admin, gunakan menu "Kelola Admin"
-        User::create([
+        $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'phone' => $request->phone,
             'address' => $request->address,
-            'role' => 'user', // Hard-coded ke 'user'
-            'email_verified_at' => now()
         ]);
+        $user->role = 'user';
+        $user->email_verified_at = now();
+        $user->save();
 
         return redirect()->route('admin.users.index')
                         ->with('success', 'User berhasil ditambahkan.');
@@ -146,7 +147,6 @@ class UserController extends Controller
             'email' => $request->email,
             'phone' => $request->phone,
             'address' => $request->address,
-            'role' => 'user' // Paksa tetap 'user'
         ];
 
         // Only update password if provided
@@ -155,6 +155,8 @@ class UserController extends Controller
         }
 
         $user->update($updateData);
+        $user->role = 'user'; // Paksa tetap 'user'
+        $user->save();
 
         return redirect()->route('admin.users.index')
                         ->with('success', 'User berhasil diperbarui.');
