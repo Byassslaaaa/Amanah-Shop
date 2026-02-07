@@ -22,6 +22,9 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="antialiased" style="font-family: 'Poppins', sans-serif;">
+    <!-- Flash Messages -->
+    @include('components.flash-message')
+
     @yield('content')
 </body>
 </html>

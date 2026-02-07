@@ -26,6 +26,9 @@
     @stack('styles')
 </head>
 <body class="bg-gray-50" style="font-family: 'Poppins', sans-serif;">
+    <!-- Flash Messages -->
+    @include('components.flash-message')
+
     <div class="flex h-screen overflow-hidden" x-data="{
         sidebarOpen: false,
         sidebarCollapsed: false,
