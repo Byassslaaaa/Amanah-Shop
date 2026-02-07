@@ -96,8 +96,6 @@
                 </p>
             </div>
 
-            {{-- Village field removed - Amanah Shop is single shop --}}
-
             <hr class="my-8 border-gray-200">
 
             <!-- Password Section -->
@@ -154,6 +152,4 @@
         </form>
     </div>
 </div>
-
-{{-- Village JavaScript removed - Amanah Shop is single shop --}}
 @endsection

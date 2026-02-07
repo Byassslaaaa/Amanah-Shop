@@ -264,7 +264,6 @@
                         class="text-[#253D4E] hover:text-[#3BB77E] font-bold text-[15px] transition-colors relative group">
                         Produk
                     </a>
-                    {{-- Villages removed - Amanah Shop is single shop --}}
                     <a href="{{ route('about') }}"
                         class="text-[#253D4E] hover:text-[#3BB77E] font-bold text-[15px] transition-colors relative group">
                         Tentang Kami
@@ -306,7 +305,6 @@
                     class="block text-lg text-gray-700 hover:text-primary-500 py-2">Beranda</a>
                 <a href="{{ route('products.index') }}"
                     class="block text-lg text-gray-700 hover:text-primary-500 py-2">Produk</a>
-                {{-- Villages removed - Amanah Shop is single shop --}}
                 <a href="{{ route('about') }}"
                     class="block text-lg text-gray-700 hover:text-primary-500 py-2">Tentang Kami</a>
 
@@ -362,10 +360,9 @@
             <div class="flex flex-col lg:flex-row items-center justify-between gap-8 relative z-10">
                 <div class="flex-1 text-center lg:text-left">
                     <h2 class="text-[36px] font-bold text-[#253D4E] mb-4 leading-tight">
-                        Dukung Ekonomi Lokal & Dapatkan Produk Berkualitas
+                        Dapatkan Penawaran & Produk Terbaru
                     </h2>
-                    <p class="text-[#7E7E7E] text-[16px] mb-6">Berlangganan newsletter untuk info produk terbaru dari
-                        Amanah Shop - Toko Kebutuhan Rumah Tangga & Lifestyle</p>
+                    <p class="text-[#7E7E7E] text-[16px] mb-6">Berlangganan newsletter untuk info produk terbaru, promo spesial, dan penawaran menarik dari Amanah Shop</p>
                     <form class="flex gap-0 bg-white rounded-full overflow-hidden shadow-lg max-w-lg mx-auto lg:mx-0">
                         <div class="flex items-center pl-6 pr-3">
                             <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor"
@@ -516,7 +513,6 @@
                         <li><a href="{{ route('about') }}"
                                 class="text-[14px] text-gray-600 hover:text-[#3BB77E] transition">Tentang Kami</a>
                         </li>
-                        {{-- Villages removed - Amanah Shop is single shop --}}
                         <li><a href="{{ route('products.index') }}"
                                 class="text-[14px] text-gray-600 hover:text-[#3BB77E] transition">Produk</a></li>
                     </ul>

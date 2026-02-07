@@ -79,7 +79,7 @@ class DatabaseSeeder extends Seeder
         // Only show supplier count if suppliers exist (seeder is optional)
         $supplierCount = \App\Models\Supplier::count();
         if ($supplierCount > 0) {
-            $this->command->info('   - Suppliers: ' . $supplierCount . ' (opsional untuk UMKM desa)');
+            $this->command->info('   - Suppliers: ' . $supplierCount . ' (opsional untuk inventory tracking)');
         }
 
         $this->command->info('   - Product Categories: ' . Category::count());
@@ -94,6 +94,6 @@ class DatabaseSeeder extends Seeder
         $this->command->info('📱 WhatsApp Integration Ready!');
         $this->command->info('   - Admin phones: 081234567890, 082136547891');
         $this->command->info('   - Example: MASUK PROD0001 100 50000');
-        $this->command->info('   - Supplier code opsional (untuk UMKM yang kulak sendiri)');
+        $this->command->info('   - Supplier code opsional (untuk tracking supplier)');
     }
 }
