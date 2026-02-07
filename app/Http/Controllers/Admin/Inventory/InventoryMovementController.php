@@ -7,6 +7,7 @@ use App\Models\Inventory\InventoryMovement;
 use App\Models\Product\Product;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class InventoryMovementController extends Controller
 {
@@ -183,32 +184,46 @@ class InventoryMovementController extends Controller
             'product_id' => 'required|exists:products,id',
             'quantity' => 'required|integer|min:1',
             'reference_type' => 'nullable|string|max:100',
-            'notes' => 'required|string'
+            'notes' => 'required|string|max:1000'
         ]);
 
-        $product = Product::findOrFail($request->product_id);
+        DB::beginTransaction();
+        try {
+            // Pessimistic lock to prevent race condition
+            $product = Product::lockForUpdate()->find($request->product_id);
 
-        // Validate stock
-        if ($product->stock < $request->quantity) {
-            return redirect()->back()
-                ->withInput()
-                ->with('error', "Stok tidak cukup. Stok saat ini: {$product->stock}");
+            if (!$product) {
+                DB::rollBack();
+                return redirect()->back()->withInput()
+                    ->with('error', 'Produk tidak ditemukan.');
+            }
+
+            // Validate stock with lock held
+            if ($product->stock < $request->quantity) {
+                DB::rollBack();
+                return redirect()->back()->withInput()
+                    ->with('error', "Stok tidak cukup. Stok saat ini: {$product->stock}");
+            }
+
+            $product->decrement('stock', $request->quantity);
+
+            InventoryMovement::record(
+                $product->id,
+                'out',
+                $request->quantity,
+                null,
+                $request->notes
+            );
+
+            DB::commit();
+
+            return redirect()->route('admin.inventory.movements.index')
+                ->with('success', 'Stok keluar berhasil dicatat.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->withInput()
+                ->with('error', 'Gagal mencatat stok keluar.');
         }
-
-        // ⚠️ FIX: Actually decrement the stock!
-        $product->decrement('stock', $request->quantity);
-
-        // Record inventory movement
-        InventoryMovement::record(
-            $product->id,
-            'out',
-            $request->quantity,
-            null,
-            $request->notes
-        );
-
-        return redirect()->route('admin.inventory.movements.index')
-            ->with('success', 'Stok keluar berhasil dicatat.');
     }
 
     public function show(InventoryMovement $movement)

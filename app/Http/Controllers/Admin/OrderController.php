@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class OrderController extends Controller
 {
@@ -77,11 +79,66 @@ class OrderController extends Controller
 
         $oldStatus = $order->status;
 
+        // If cancelling, restore stock within a transaction
+        if ($request->status === 'cancelled' && $oldStatus !== 'cancelled') {
+            DB::beginTransaction();
+            try {
+                $order = Order::lockForUpdate()->find($order->id);
+
+                // Restore stock for each item
+                foreach ($order->items as $item) {
+                    $product = \App\Models\Product\Product::lockForUpdate()
+                        ->find($item->product_id);
+
+                    if ($product) {
+                        $product->increment('stock', $item->quantity);
+
+                        \App\Models\Inventory\InventoryMovement::record(
+                            $item->product_id,
+                            'in',
+                            $item->quantity,
+                            $order,
+                            "Pembatalan oleh admin - order #{$order->order_number}"
+                        );
+                    }
+                }
+
+                $updateData = [
+                    'status' => 'cancelled',
+                    'cancelled_at' => now(),
+                ];
+
+                if ($request->filled('admin_notes')) {
+                    $updateData['admin_notes'] = $request->admin_notes;
+                }
+
+                $order->update($updateData);
+
+                Log::info('Order cancelled by admin', [
+                    'order_id' => $order->id,
+                    'admin_id' => auth()->id(),
+                ]);
+
+                DB::commit();
+
+                return redirect()
+                    ->route('admin.orders.show', $order)
+                    ->with('success', 'Pesanan berhasil dibatalkan dan stok dikembalikan.');
+            } catch (\Exception $e) {
+                DB::rollBack();
+                Log::error('Error cancelling order by admin', [
+                    'order_id' => $order->id,
+                    'error' => $e->getMessage(),
+                ]);
+                return redirect()->back()
+                    ->with('error', 'Gagal membatalkan pesanan.');
+            }
+        }
+
         $updateData = [
             'status' => $request->status,
         ];
 
-        // Add admin notes if provided
         if ($request->filled('admin_notes')) {
             $updateData['admin_notes'] = $request->admin_notes;
         }
@@ -92,6 +149,13 @@ class OrderController extends Controller
         }
 
         $order->update($updateData);
+
+        Log::info('Order status updated by admin', [
+            'order_id' => $order->id,
+            'admin_id' => auth()->id(),
+            'old_status' => $oldStatus,
+            'new_status' => $request->status,
+        ]);
 
         return redirect()
             ->route('admin.orders.show', $order)

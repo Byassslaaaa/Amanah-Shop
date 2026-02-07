@@ -355,7 +355,7 @@ class OrderController extends Controller
             DB::rollBack();
 
             return redirect()->back()
-                ->with('error', 'Gagal membuat order: ' . $e->getMessage());
+                ->with('error', 'Gagal membuat order. Silakan coba lagi.');
         }
     }
 
@@ -436,7 +436,7 @@ class OrderController extends Controller
             ]);
 
             return redirect()->back()
-                ->with('error', 'Gagal membatalkan order: ' . $e->getMessage());
+                ->with('error', 'Gagal membatalkan order. Silakan coba lagi.');
         }
     }
 

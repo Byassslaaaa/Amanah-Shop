@@ -24,9 +24,8 @@ use App\Http\Controllers\Admin\ShippingController;
 |--------------------------------------------------------------------------
 */
 
-// API Routes for Biteship (Shipping)
-// ⚠️ Rate limited to prevent API abuse and reduce costs
-Route::prefix('api')->name('api.')->middleware('throttle:60,1')->group(function () {
+// API Routes for Biteship (Shipping) - Auth required to prevent anonymous API abuse
+Route::prefix('api')->name('api.')->middleware(['auth', 'throttle:60,1'])->group(function () {
     // Shipping rates - more restrictive (30 requests/minute) as it calls external API
     Route::post('/biteship/rates', [BiteshipController::class, 'getRates'])
         ->middleware('throttle:30,1')

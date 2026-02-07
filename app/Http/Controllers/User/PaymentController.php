@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Services\MidtransService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PaymentController extends Controller
 {
@@ -42,7 +43,7 @@ class PaymentController extends Controller
                 ]);
             } catch (\Exception $e) {
                 return redirect()->route('user.orders.show', $order)
-                    ->with('error', 'Gagal membuat pembayaran: ' . $e->getMessage());
+                    ->with('error', 'Gagal membuat pembayaran. Silakan coba lagi.');
             }
         }
 
@@ -163,6 +164,24 @@ class PaymentController extends Controller
                     $order->update(['status' => 'processing']);
                 } elseif (in_array($notification['payment_status'], ['failed', 'expired', 'cancelled'])) {
                     $order->update(['status' => 'cancelled']);
+
+                    // Restore stock for failed/expired/cancelled payments
+                    foreach ($order->items as $item) {
+                        $product = \App\Models\Product\Product::lockForUpdate()
+                            ->find($item->product_id);
+
+                        if ($product) {
+                            $product->increment('stock', $item->quantity);
+
+                            \App\Models\Inventory\InventoryMovement::record(
+                                $item->product_id,
+                                'in',
+                                $item->quantity,
+                                $order,
+                                "Pembayaran gagal/expired - order #{$order->order_number}"
+                            );
+                        }
+                    }
                 }
 
                 return 'success';
@@ -206,6 +225,11 @@ class PaymentController extends Controller
         if (!$order) {
             return redirect()->route('user.orders.index')
                 ->with('error', 'Order tidak ditemukan');
+        }
+
+        // Verify order belongs to authenticated user
+        if ($order->user_id !== auth()->id()) {
+            abort(403);
         }
 
         // Check transaction status dari Midtrans
@@ -287,7 +311,7 @@ class PaymentController extends Controller
             ]);
 
             return redirect()->route('user.orders.show', $order)
-                ->with('error', 'Gagal memeriksa status pembayaran: ' . $e->getMessage());
+                ->with('error', 'Gagal memeriksa status pembayaran. Silakan coba lagi nanti.');
         }
     }
 
@@ -313,7 +337,7 @@ class PaymentController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'error' => $e->getMessage()
+                'error' => 'Gagal memeriksa status pembayaran'
             ], 500);
         }
     }
