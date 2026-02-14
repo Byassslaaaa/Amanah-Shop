@@ -45,7 +45,7 @@
                 </a>
 
                 <!-- Stock In -->
-                <a href="{{ route('admin.inventory.movements.stock-in') }}"
+                <a href="{{ route('admin.inventory.movements.stock-in-form') }}"
                    class="flex flex-col items-center justify-center p-4 bg-white rounded-lg border-2 border-purple-200 hover:border-purple-400 hover:shadow-md transition-all group">
                     <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-2 group-hover:bg-purple-200 transition-colors">
                         <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -56,7 +56,7 @@
                 </a>
 
                 <!-- Credit Payments -->
-                <a href="{{ route('admin.credit.payments.index') }}"
+                <a href="{{ route('admin.credits.payments.index') }}"
                    class="flex flex-col items-center justify-center p-4 bg-white rounded-lg border-2 border-orange-200 hover:border-orange-400 hover:shadow-md transition-all group">
                     <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-2 group-hover:bg-orange-200 transition-colors">
                         <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -63,7 +63,7 @@ class InventoryMovementController extends Controller
         if ($request->display_on_web === 'no') {
             $request->validate([
                 'item_name' => 'required|string|max:255',
-                'supplier_id' => 'required|exists:suppliers,id',
+                'supplier_id' => 'nullable|exists:suppliers,id',
                 'quantity' => 'required|integer|min:1',
                 'unit_price' => 'required|numeric|min:0',
                 'document_number' => 'nullable|string|max:100',
@@ -97,7 +97,7 @@ class InventoryMovementController extends Controller
                 'description' => 'required|string',
                 'price' => 'required|numeric|min:0',
                 'category_id' => 'required|exists:categories,id',
-                'supplier_id' => 'required|exists:suppliers,id',
+                'supplier_id' => 'nullable|exists:suppliers,id',
                 'quantity' => 'required|integer|min:1',
                 'unit_price' => 'required|numeric|min:0',
                 'document_number' => 'nullable|string|max:100',
@@ -140,7 +140,7 @@ class InventoryMovementController extends Controller
             // Scenario 3: Existing product
             $request->validate([
                 'product_id' => 'required|exists:products,id',
-                'supplier_id' => 'required|exists:suppliers,id',
+                'supplier_id' => 'nullable|exists:suppliers,id',
                 'quantity' => 'required|integer|min:1',
                 'unit_price' => 'required|numeric|min:0',
                 'document_number' => 'nullable|string|max:100',

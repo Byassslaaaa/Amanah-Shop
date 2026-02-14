@@ -164,9 +164,4 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// Export for manual usage
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = FormValidator;
-}
-
 export default FormValidator;

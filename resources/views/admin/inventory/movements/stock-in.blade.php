@@ -172,8 +172,8 @@
             <div class="pt-4 border-t border-gray-200">
                 <!-- Supplier -->
                 <div class="mb-6">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Supplier <span class="text-red-500">*</span></label>
-                    <select name="supplier_id" class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 @error('supplier_id') border-red-500 @enderror" required>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Supplier <span class="text-gray-400 text-xs">(Opsional)</span></label>
+                    <select name="supplier_id" class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 @error('supplier_id') border-red-500 @enderror">
                         <option value="">Pilih Supplier</option>
                         @foreach($suppliers as $supplier)
                             <option value="{{ $supplier->id }}" {{ old('supplier_id') == $supplier->id ? 'selected' : '' }}>
